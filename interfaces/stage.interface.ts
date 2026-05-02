@@ -1,9 +1,3 @@
-export interface Realm {
-  id: number;
-  stages: Stage[];
-  title: string; //Title that the stage gives. Golden Core True Monarch etc
-}
-
 export interface Stage {
   id: number;
   name: string;
