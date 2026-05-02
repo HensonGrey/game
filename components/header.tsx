@@ -1,10 +1,22 @@
 import { View, Text } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { usePlayerStore } from "../store/player-store";
+import { useEffect } from "react";
 
 const Header = () => {
-  const currentAge = 5;
-  const maxAge = 80;
-  const storePoints = 100;
+  const lifespanLimit = usePlayerStore((state) => state.lifespan);
+  const storePoints = usePlayerStore((state) => state.originPoints);
+  const currentAge = usePlayerStore((state) => state.currentAge);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      usePlayerStore.setState((state) => ({
+        currentAge: state.currentAge + 1,
+      }));
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <View className="bg-slate-700 px-6 py-4 flex-row items-center justify-between">
@@ -12,7 +24,7 @@ const Header = () => {
       <View className="flex-row items-center gap-3">
         <Text className="text-white text-2xl">Age:</Text>
         <Text className="text-white font-bold text-2xl">
-          {currentAge} / {maxAge}
+          {currentAge} / {lifespanLimit}
         </Text>
       </View>
 

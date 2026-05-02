@@ -6,15 +6,18 @@ export default function HomeScreen() {
   const getStage = usePlayerStore((state) => state.getStage);
   const addQi = usePlayerStore((state) => state.addQi);
   const breakthrough = usePlayerStore((state) => state.breakthrough);
+
   const realm = getRealm();
   const stage = getStage();
+
   const currentQi = usePlayerStore((state) => state.qi);
   const requiredQi = usePlayerStore((state) => state.getRequiredQi());
+
   const canBreakthrough = currentQi >= requiredQi;
 
   return (
     <Pressable
-      className="flex-1 items-center justify-center bg-gray-900 px-6 py-4"
+      className="flex-1 items-center justify-center"
       onPress={() => addQi(5)}
     >
       {/* Realm text */}

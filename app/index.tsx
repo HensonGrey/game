@@ -6,7 +6,7 @@ export default function Loading() {
   useEffect(() => {
     // Simulate fetching user data
     const fetchData = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // replace with real fetch
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // replace with real fetch
       router.replace("/home");
     };
 

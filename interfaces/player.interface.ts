@@ -4,6 +4,7 @@ export interface Player {
 
   qi: number;
   lifespan: number;
+  currentAge: number;
 
   originPoints: number;
   spiritualRoot: any;

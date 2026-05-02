@@ -15,8 +15,9 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   // Player fields
   currentRealmId: 0,
   currentStageId: 0,
+  currentAge: 0,
   qi: 0,
-  lifespan: 0,
+  lifespan: 80,
   originPoints: 0,
   spiritualRoot: null,
 
@@ -43,23 +44,29 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   },
 
   breakthrough: () => {
-    const { currentRealmId, currentStageId, qi } = get();
+    const { currentRealmId, currentStageId } = get();
     const requiredQi = get().getRequiredQi();
     const currentRealm = realms[currentRealmId];
 
     const isLastStage = currentStageId === currentRealm.stages.length - 1;
 
     if (isLastStage) {
-      set({
+      const nextRealm = realms[currentRealmId + 1].stages[0];
+      set((state) => ({
         currentRealmId: currentRealmId + 1,
         currentStageId: 0,
-        qi: qi - requiredQi,
-      });
+        qi: state.qi - requiredQi,
+        originPoints: state.originPoints + nextRealm.originPointsReward,
+        lifespan: state.lifespan + nextRealm.lifespanIncrease,
+      }));
     } else {
-      set({
+      const nextStage = realms[currentRealmId].stages[currentStageId + 1];
+      set((state) => ({
         currentStageId: currentStageId + 1,
-        qi: qi - requiredQi,
-      });
+        qi: state.qi - requiredQi,
+        originPoints: state.originPoints + nextStage.originPointsReward,
+        lifespan: state.lifespan + nextStage.lifespanIncrease,
+      }));
     }
   },
 }));
