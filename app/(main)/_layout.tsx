@@ -10,7 +10,7 @@ export default function MainLayout() {
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>
         <Header />
-        <View className="flex-1 items-center justify-center bg-gray-900 px-6 py-4">
+        <View className="flex-1 bg-gray-600">
           <Slot />
         </View>
         <Footer />

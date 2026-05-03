@@ -1,5 +1,4 @@
 export interface Stage {
-  id: number;
   name: string;
   title?: string; //Title that the stage gives, cosmetic and optional. For example max stage body refining is grandmaster
   description: string;

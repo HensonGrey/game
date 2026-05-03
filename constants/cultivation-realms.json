@@ -1,44 +1,37 @@
 {
-  "id": 0,
   "realm": "Body Strengthening",
   "stages": [
     {
-      "id": 0,
       "name": "Skin Refining",
       "description": "",
       "lifespanIncrease": 1,
       "originPointsReward": 1
     },
     {
-      "id": 1,
       "name": "Muscle Cleansing",
       "description": "",
       "lifespanIncrease": 1,
       "originPointsReward": 1
     },
     {
-      "id": 2,
       "name": "Bone Tempering",
       "description": "",
       "lifespanIncrease": 1,
       "originPointsReward": 1
     },
     {
-      "id": 3,
       "name": "Marrow Washing",
       "description": "",
       "lifespanIncrease": 1,
       "originPointsReward": 1
     },
     {
-      "id": 4,
       "name": "Organ Forging",
       "description": "",
       "lifespanIncrease": 1,
       "originPointsReward": 1
     },
     {
-      "id": 5,
       "name": "Meridian Opening",
       "description": "",
       "lifespanIncrease": 1,

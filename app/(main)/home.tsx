@@ -12,13 +12,14 @@ export default function HomeScreen() {
 
   const currentQi = usePlayerStore((state) => state.qi);
   const requiredQi = usePlayerStore((state) => state.getRequiredQi());
+  const qiMultiplier = usePlayerStore((state) => state.qiMultiplier);
 
   const canBreakthrough = currentQi >= requiredQi;
 
   return (
     <Pressable
       className="flex-1 items-center justify-center"
-      onPress={() => addQi(5)}
+      onPress={() => addQi(qiMultiplier)}
     >
       {/* Realm text */}
       <Text className="text-white text-2xl font-bold mb-4">

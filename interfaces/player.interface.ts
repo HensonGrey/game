@@ -1,13 +1,14 @@
 export interface Player {
+  // current life information
   currentRealmId: number;
   currentStageId: number;
-
   qi: number;
   lifespan: number;
   currentAge: number;
+  spiritualRootId: number;
+  qiMultiplier: number;
 
   originPoints: number;
-  spiritualRoot: any;
   lives?: any[];
   titles?: any[];
 }
