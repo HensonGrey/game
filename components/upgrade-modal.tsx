@@ -5,10 +5,23 @@ interface Props {
   visible: boolean;
   desc: string;
   level: number;
+  levelLabel?: string;
+  isMaxed: boolean;
+  nextDesc?: string;
+  nextLabel?: string;
   onClose: () => void;
 }
 
-const UpgradeModal = ({ visible, desc, level, onClose }: Props) => {
+const UpgradeModal = ({
+  visible,
+  desc,
+  level,
+  levelLabel,
+  isMaxed,
+  nextDesc,
+  nextLabel,
+  onClose,
+}: Props) => {
   return (
     <Modal
       animationType="fade"
@@ -36,11 +49,8 @@ const UpgradeModal = ({ visible, desc, level, onClose }: Props) => {
           </Text>
           <View className="w-full flex-col items-center gap-y-4">
             <View className="w-full items-center bg-slate-800/80 p-6 rounded-[32px] border border-slate-700/50">
-              <Text className="text-slate-500 text-[9px] font-black uppercase mb-2">
-                Current Tier
-              </Text>
               <Text className="text-white font-black text-xl mb-3 tracking-tight">
-                {level}
+                {levelLabel ?? `LVL ${level}`}
               </Text>
               <Text className="text-slate-400 text-center text-xs leading-5 italic">
                 {desc}
@@ -53,12 +63,20 @@ const UpgradeModal = ({ visible, desc, level, onClose }: Props) => {
               <Text className="text-purple-400 text-[9px] font-black uppercase mb-2">
                 Next Tier
               </Text>
-              <Text className="text-purple-300 font-black text-xl mb-3 tracking-tight">
-                LVL {level + 1}
-              </Text>
-              <Text className="text-slate-700 text-center text-xs italic tracking-[4px]">
-                LOCKED DATA
-              </Text>
+              {isMaxed ? (
+                <Text className="text-slate-600 font-black text-xl tracking-tight">
+                  MAX
+                </Text>
+              ) : (
+                <>
+                  <Text className="text-purple-300 font-black text-xl mb-3 tracking-tight">
+                    {nextLabel ?? `LVL ${level + 1}`}
+                  </Text>
+                  <Text className="text-slate-400 text-center text-xs leading-5 italic">
+                    {nextDesc}
+                  </Text>
+                </>
+              )}
             </View>
           </View>
         </Pressable>

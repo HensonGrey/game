@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { usePlayerStore } from "../../store/player-store";
 import { realms } from "../../data/cultivation-data";
+import { getRequiredQi } from "../../helpers/cultivation-helper";
 
 export default function HomeScreen() {
   const addQi = usePlayerStore((state) => state.addQi);
@@ -10,7 +11,7 @@ export default function HomeScreen() {
   const currentStageIndex = usePlayerStore((state) => state.currentStageId);
 
   const currentQi = usePlayerStore((state) => state.qi);
-  const requiredQi = usePlayerStore((state) => state.getRequiredQi());
+  const requiredQi = getRequiredQi(currentRealmIndex, currentStageIndex);
   const spiritualRootIndex = usePlayerStore(
     (state) => state.spiritualRootIndex,
   );

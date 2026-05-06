@@ -16,6 +16,9 @@ export default function SystemStore() {
     title: "",
     desc: "",
     level: 0,
+    nextDesc: "",
+    nextLabel: "",
+    levelLabel: "",
   });
 
   const spiritualRootIndex = usePlayerStore(
@@ -57,13 +60,17 @@ export default function SystemStore() {
 
   const spiritualRoot: Upgrade = {
     type: UPGRADE_TYPES.SPIRITUAL_ROOT,
-    label: `${roots[spiritualRootIndex].rank}`,
+    label: `${roots[spiritualRootIndex].rank} Spiritual Root`,
     icon: "seedling",
     cost: getUpgradeCost(UPGRADE_TYPES.SPIRITUAL_ROOT),
     level: spiritualRootIndex + 1,
     maxLevel: roots.length - 1,
     isMaxed: spiritualRootIndex >= roots.length - 1,
     desc: roots[spiritualRootIndex].description,
+    levelLabel: `${roots[spiritualRootIndex].rank} Spiritual Root`,
+
+    nextDesc: roots[spiritualRootIndex + 1]?.description || "MAX",
+    nextLabel: roots[spiritualRootIndex + 1]?.rank || "MAX",
   };
 
   const vitality: Upgrade = {
@@ -74,6 +81,9 @@ export default function SystemStore() {
     level: vitalityLevel + 1,
     isMaxed: false,
     desc: `Increases your lifespan by ${vitalityLevel * 20}%`,
+
+    nextDesc: `Increases your lifespan by ${(vitalityLevel + 1) * 20}%`,
+    nextLabel: undefined,
   };
 
   const upgrades: Upgrade[] = [spiritualRoot, vitality];
@@ -103,6 +113,10 @@ export default function SystemStore() {
                 title: upgrade.label,
                 desc: upgrade.desc,
                 level: upgrade.level,
+                nextDesc: upgrade.nextDesc,
+                nextLabel: upgrade.nextLabel,
+                isMaxed: upgrade.isMaxed,
+                levelLabel: upgrade.levelLabel,
               })
             }
             onPress={() => purchaseUpgrade(upgrade.type, upgrade.cost)}
@@ -114,6 +128,10 @@ export default function SystemStore() {
         visible={info.visible}
         desc={info.desc}
         level={info.level}
+        isMaxed={info.isMaxed}
+        nextDesc={info.nextDesc}
+        nextLabel={info.nextLabel}
+        levelLabel={info.levelLabel}
         onClose={() => setInfo({ ...info, visible: false })}
       />
     </ScrollView>

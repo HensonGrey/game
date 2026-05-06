@@ -43,12 +43,10 @@ const UpgradeCard = ({ upgrade, canAfford, onPress, onInfoPress }: Props) => {
                   canAfford ? "text-white" : "text-slate-600"
                 }`}
               >
-                {upgrade.label.toUpperCase()}
+                {upgrade.label}
               </Text>
               <Text className="text-purple-500/60 text-[9px] font-black uppercase tracking-[2px] mt-1">
-                {isNaN(Number(upgrade.level))
-                  ? upgrade.level
-                  : `LVL ${upgrade.level}`}
+                {`LVL ${upgrade.level}`}
               </Text>
             </View>
           </Pressable>

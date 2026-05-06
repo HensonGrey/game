@@ -8,8 +8,12 @@ export interface Upgrade {
   label: string;
   icon: string;
   cost: number;
-  level: string | number;
+  level: number;
   desc: string;
   maxLevel?: number;
   isMaxed: boolean;
+  levelLabel?: string;
+
+  nextDesc?: string;
+  nextLabel?: string;
 }
