@@ -1,9 +1,8 @@
 import { realms } from "../data/cultivation-data";
 
 export const getRequiredQi = (realmId: number, stageId: number): number => {
-  const base = 5;
   const globalLevel = (realmId + 1) * 6 + stageId;
-  return Math.floor(base * Math.pow(globalLevel, 1.5));
+  return Math.ceil(20 * Math.pow(globalLevel, 1.5));
 };
 
 //finds information about the next cultivation stage
@@ -15,9 +14,17 @@ export const getNextState = (realmId: number, stageId: number) => {
   if (isLastStage) {
     const next = realms[realmId + 1]?.stages[0];
     if (!next) return null; // at max realm
-    return { currentRealmId: realmId + 1, currentStageId: 0, reward: next };
+    return {
+      currentRealmIndex: realmId + 1,
+      currentStageIndex: 0,
+      reward: next,
+    };
   }
 
   const next = currentRealm.stages[stageId + 1];
-  return { currentRealmId: realmId, currentStageId: stageId + 1, reward: next };
+  return {
+    currentRealmIndex: realmId,
+    currentStageIndex: stageId + 1,
+    reward: next,
+  };
 };

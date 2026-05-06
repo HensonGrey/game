@@ -1,7 +1,7 @@
 export interface Player {
   // current life information
-  currentRealmId: number;
-  currentStageId: number;
+  currentRealmIndex: number;
+  currentStageIndex: number;
 
   qi: number;
 

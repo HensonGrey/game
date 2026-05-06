@@ -7,8 +7,8 @@ export default function HomeScreen() {
   const addQi = usePlayerStore((state) => state.addQi);
   const breakthrough = usePlayerStore((state) => state.breakthrough);
 
-  const currentRealmIndex = usePlayerStore((state) => state.currentRealmId);
-  const currentStageIndex = usePlayerStore((state) => state.currentStageId);
+  const currentRealmIndex = usePlayerStore((state) => state.currentRealmIndex);
+  const currentStageIndex = usePlayerStore((state) => state.currentStageIndex);
 
   const currentQi = usePlayerStore((state) => state.qi);
   const requiredQi = getRequiredQi(currentRealmIndex, currentStageIndex);
