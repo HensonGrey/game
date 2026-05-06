@@ -43,7 +43,7 @@ const UpgradeModal = ({ visible, desc, level, onClose }: Props) => {
                 {level}
               </Text>
               <Text className="text-slate-400 text-center text-xs leading-5 italic">
-                "{desc}"
+                {desc}
               </Text>
             </View>
             <View className="bg-purple-600/20 p-3 rounded-full">

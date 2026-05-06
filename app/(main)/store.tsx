@@ -3,24 +3,11 @@ import { View, Text, ScrollView } from "react-native";
 import { usePlayerStore } from "../../store/player-store";
 import UpgradeCard from "../../components/upgrade-card";
 import UpgradeModal from "../../components/upgrade-modal";
-import { Upgrade } from "../../interfaces/store-upgrade.interface";
-
-const upgrades: Upgrade[] = [
-  {
-    label: "Spiritual Root",
-    icon: "seedling",
-    cost: 100,
-    level: "Low Grade Spiritual Root",
-    desc: "The foundation of your existence. Improves natural energy absorption.",
-  },
-  {
-    label: "Vitality",
-    icon: "bolt",
-    cost: 250,
-    level: 12,
-    desc: "Directly amplifies the output of your skills.",
-  },
-];
+import {
+  Upgrade,
+  UPGRADE_TYPES,
+} from "../../interfaces/store-upgrade.interface";
+import spiritualRootJson from "../../constants/spiritual-root.json";
 
 export default function SystemStore() {
   const [info, setInfo] = useState<any>({
@@ -30,8 +17,66 @@ export default function SystemStore() {
     desc: "",
     level: 0,
   });
+
+  const spiritualRootIndex = usePlayerStore(
+    (state) => state.spiritualRootIndex,
+  );
+  const vitalityLevel = usePlayerStore((state) => state.vitalityLevel);
   const originPoints = usePlayerStore((state) => state.originPoints);
-  const purchaseUpgrade = usePlayerStore((state) => state.purchaseUpgrade);
+
+  const getUpgradeCost = (type: UPGRADE_TYPES): number => {
+    switch (type) {
+      case UPGRADE_TYPES.SPIRITUAL_ROOT:
+        return Math.floor(20 * Math.pow(1.5, spiritualRootIndex));
+      case UPGRADE_TYPES.VITALITY:
+        return Math.floor(10 * Math.pow(1.5, vitalityLevel));
+      default:
+        throw Error("[Store.tsx] - Not implemented exception");
+    }
+  };
+
+  const purchaseUpgrade = (type: UPGRADE_TYPES, cost: number) => {
+    switch (type) {
+      case UPGRADE_TYPES.SPIRITUAL_ROOT: {
+        if (spiritualRootIndex >= spiritualRootJson.length - 1) return;
+
+        usePlayerStore.setState({
+          spiritualRootIndex: spiritualRootIndex + 1,
+          originPoints: originPoints - cost,
+        });
+        break;
+      }
+      case UPGRADE_TYPES.VITALITY: {
+        usePlayerStore.setState({
+          vitalityLevel: vitalityLevel + 1,
+          originPoints: originPoints - cost,
+        });
+      }
+    }
+  };
+
+  const spiritualRoot: Upgrade = {
+    type: UPGRADE_TYPES.SPIRITUAL_ROOT,
+    label: `${spiritualRootJson[spiritualRootIndex].rank}`,
+    icon: "seedling",
+    cost: getUpgradeCost(UPGRADE_TYPES.SPIRITUAL_ROOT),
+    level: spiritualRootIndex + 1,
+    maxLevel: spiritualRootJson.length - 1,
+    isMaxed: spiritualRootIndex >= spiritualRootJson.length - 1,
+    desc: spiritualRootJson[spiritualRootIndex].description,
+  };
+
+  const vitality: Upgrade = {
+    type: UPGRADE_TYPES.VITALITY,
+    label: "Vitality",
+    icon: "tint",
+    cost: getUpgradeCost(UPGRADE_TYPES.VITALITY),
+    level: vitalityLevel + 1,
+    isMaxed: false,
+    desc: `Increases your lifespan by ${vitalityLevel * 20}%`,
+  };
+
+  const upgrades: Upgrade[] = [spiritualRoot, vitality];
 
   return (
     <ScrollView
@@ -51,7 +96,7 @@ export default function SystemStore() {
           <UpgradeCard
             key={upgrade.label}
             upgrade={upgrade}
-            canAfford={originPoints >= upgrade.cost}
+            canAfford={!upgrade.isMaxed && originPoints >= upgrade.cost}
             onInfoPress={() =>
               setInfo({
                 visible: true,
@@ -60,7 +105,7 @@ export default function SystemStore() {
                 level: upgrade.level,
               })
             }
-            onPress={() => purchaseUpgrade(upgrade)}
+            onPress={() => purchaseUpgrade(upgrade.type, upgrade.cost)}
           />
         ))}
       </View>

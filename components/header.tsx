@@ -4,7 +4,9 @@ import { usePlayerStore } from "../store/player-store";
 import { useEffect } from "react";
 
 const Header = () => {
-  const lifespanLimit = usePlayerStore((state) => state.lifespan);
+  const lifespanLimit = usePlayerStore(
+    (state) => state.lifespan + state.vitalityLevel * 20,
+  );
   const storePoints = usePlayerStore((state) => state.originPoints);
   const currentAge = usePlayerStore((state) => state.currentAge);
 

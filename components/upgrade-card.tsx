@@ -56,25 +56,31 @@ const UpgradeCard = ({ upgrade, canAfford, onPress, onInfoPress }: Props) => {
           {/* Buy button */}
           <Pressable
             onPress={onPress}
-            disabled={!canAfford}
+            disabled={!canAfford || upgrade.isMaxed}
             className={`px-5 py-3 rounded-2xl items-center justify-center ${
-              canAfford
+              canAfford && !upgrade.isMaxed
                 ? "bg-purple-600"
                 : "bg-slate-950 border border-slate-800"
             }`}
           >
-            <View className="flex-row items-baseline gap-1">
-              <Text
-                className={`text-lg font-black ${canAfford ? "text-white" : "text-slate-700"}`}
-              >
-                {upgrade.cost}
+            {upgrade.isMaxed ? (
+              <Text className="text-slate-500 text-sm font-black tracking-widest">
+                MAX
               </Text>
-              <Text
-                className={`text-[10px] font-bold ${canAfford ? "text-purple-200" : "text-slate-800"}`}
-              >
-                PTS
-              </Text>
-            </View>
+            ) : (
+              <View className="flex-row items-baseline gap-1">
+                <Text
+                  className={`text-lg font-black ${canAfford ? "text-white" : "text-slate-700"}`}
+                >
+                  {upgrade.cost}
+                </Text>
+                <Text
+                  className={`text-[10px] font-bold ${canAfford ? "text-purple-200" : "text-slate-800"}`}
+                >
+                  PTS
+                </Text>
+              </View>
+            )}
           </Pressable>
         </View>
       </View>

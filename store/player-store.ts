@@ -1,9 +1,7 @@
-import { SpiritualRoot } from "./../interfaces/spiritual-root.interface";
 import { create } from "zustand";
 import { Player } from "../interfaces/player.interface";
 import { realms } from "../data/cultivation-data";
 import { Stage } from "../interfaces/stage.interface";
-import { Upgrade } from "../interfaces/store-upgrade.interface";
 
 interface PlayerStore extends Player {
   addQi: (amount: number) => void;
@@ -11,7 +9,6 @@ interface PlayerStore extends Player {
   getRealm: () => (typeof realms)[0];
   getRequiredQi: () => number;
   breakthrough: () => void;
-  purchaseUpgrade: (upgrade: Upgrade) => void;
 }
 
 const defaultPlayer: Player = {
@@ -20,7 +17,8 @@ const defaultPlayer: Player = {
   qi: 0,
   lifespan: 80,
   currentAge: 0,
-  spiritualRootId: 0,
+  spiritualRootIndex: 0,
+  vitalityLevel: 0,
   qiMultiplier: 5,
   originPoints: 1000,
 };
@@ -71,29 +69,6 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         originPoints: state.originPoints + nextStage.originPointsReward,
         lifespan: state.lifespan + nextStage.lifespanIncrease,
       }));
-    }
-  },
-
-  purchaseUpgrade: (upgrade) => {
-    const upgradeType = upgrade.label.toLocaleLowerCase().split(" ")[0];
-
-    switch (upgradeType) {
-      case "spiritual": {
-        set((state) => ({
-          spiritualRootId: state.spiritualRootId + 1,
-          originPoints: state.originPoints - upgrade.cost,
-        }));
-        break;
-      }
-      case "vitality": {
-        //TODO
-        break;
-      }
-      default: {
-        throw new Error(
-          "[PlayerStore] - Attempting to upgrade a nonexistant stat",
-        );
-      }
     }
   },
 }));
