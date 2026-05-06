@@ -1,12 +1,9 @@
 import { create } from "zustand";
 import { Player } from "../interfaces/player.interface";
 import { realms } from "../data/cultivation-data";
-import { Stage } from "../interfaces/stage.interface";
 
 interface PlayerStore extends Player {
   addQi: (amount: number) => void;
-  getStage: () => Stage;
-  getRealm: () => (typeof realms)[0];
   getRequiredQi: () => number;
   breakthrough: () => void;
 }
@@ -19,7 +16,6 @@ const defaultPlayer: Player = {
   currentAge: 0,
   spiritualRootIndex: 0,
   vitalityLevel: 0,
-  qiMultiplier: 5,
   originPoints: 1000,
 };
 
@@ -28,14 +24,6 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
   // Actions
   addQi: (amount: number) => set((state) => ({ qi: state.qi + amount })),
-
-  getRealm: () => realms[get().currentRealmId] ?? realms[0],
-
-  getStage: () => {
-    const { currentRealmId, currentStageId } = get();
-    const realm = realms[currentRealmId] ?? realms[0];
-    return realm.stages[currentStageId] ?? realm.stages[0];
-  },
 
   getRequiredQi: () => {
     const { currentRealmId, currentStageId } = get();

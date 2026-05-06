@@ -1,18 +1,31 @@
 import { View, Text, Pressable } from "react-native";
 import { usePlayerStore } from "../../store/player-store";
+import { realms } from "../../data/cultivation-data";
 
 export default function HomeScreen() {
-  const getRealm = usePlayerStore((state) => state.getRealm);
-  const getStage = usePlayerStore((state) => state.getStage);
   const addQi = usePlayerStore((state) => state.addQi);
   const breakthrough = usePlayerStore((state) => state.breakthrough);
 
-  const realm = getRealm();
-  const stage = getStage();
+  const currentRealmIndex = usePlayerStore((state) => state.currentRealmId);
+  const currentStageIndex = usePlayerStore((state) => state.currentStageId);
 
   const currentQi = usePlayerStore((state) => state.qi);
   const requiredQi = usePlayerStore((state) => state.getRequiredQi());
-  const qiMultiplier = usePlayerStore((state) => state.qiMultiplier);
+  const spiritualRootIndex = usePlayerStore(
+    (state) => state.spiritualRootIndex,
+  );
+
+  const BASE_MULTIPLIER = 5;
+  const SPIRITUAL_ROOT_MULTIPLIER = Math.ceil(
+    Math.pow(3.3, spiritualRootIndex),
+  );
+  const CULTIVATION_MULTIPLIER = Math.pow(
+    2,
+    currentRealmIndex * 5 + currentStageIndex,
+  );
+
+  const qiMultiplier =
+    BASE_MULTIPLIER * SPIRITUAL_ROOT_MULTIPLIER * CULTIVATION_MULTIPLIER;
 
   const canBreakthrough = currentQi >= requiredQi;
 
@@ -23,7 +36,8 @@ export default function HomeScreen() {
     >
       {/* Realm text */}
       <Text className="text-white text-2xl font-bold mb-4">
-        {realm.realm} - {stage.name}
+        {realms[currentRealmIndex].name} -{" "}
+        {realms[currentRealmIndex].stages[currentStageIndex].name}
       </Text>
 
       {/* Player */}

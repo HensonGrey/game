@@ -9,7 +9,6 @@ export interface Player {
   currentAge: number;
 
   spiritualRootIndex: number;
-  qiMultiplier: number;
 
   vitalityLevel: number;
 

@@ -1,3 +1,4 @@
 export interface SpiritualRoot {
-  name: string;
+  rank: string;
+  description: string;
 }

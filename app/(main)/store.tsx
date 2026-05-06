@@ -7,7 +7,7 @@ import {
   Upgrade,
   UPGRADE_TYPES,
 } from "../../interfaces/store-upgrade.interface";
-import spiritualRootJson from "../../constants/spiritual-root.json";
+import { roots } from "../../data/spiritual-root-data";
 
 export default function SystemStore() {
   const [info, setInfo] = useState<any>({
@@ -38,7 +38,7 @@ export default function SystemStore() {
   const purchaseUpgrade = (type: UPGRADE_TYPES, cost: number) => {
     switch (type) {
       case UPGRADE_TYPES.SPIRITUAL_ROOT: {
-        if (spiritualRootIndex >= spiritualRootJson.length - 1) return;
+        if (spiritualRootIndex >= roots.length - 1) return;
 
         usePlayerStore.setState({
           spiritualRootIndex: spiritualRootIndex + 1,
@@ -57,13 +57,13 @@ export default function SystemStore() {
 
   const spiritualRoot: Upgrade = {
     type: UPGRADE_TYPES.SPIRITUAL_ROOT,
-    label: `${spiritualRootJson[spiritualRootIndex].rank}`,
+    label: `${roots[spiritualRootIndex].rank}`,
     icon: "seedling",
     cost: getUpgradeCost(UPGRADE_TYPES.SPIRITUAL_ROOT),
     level: spiritualRootIndex + 1,
-    maxLevel: spiritualRootJson.length - 1,
-    isMaxed: spiritualRootIndex >= spiritualRootJson.length - 1,
-    desc: spiritualRootJson[spiritualRootIndex].description,
+    maxLevel: roots.length - 1,
+    isMaxed: spiritualRootIndex >= roots.length - 1,
+    desc: roots[spiritualRootIndex].description,
   };
 
   const vitality: Upgrade = {

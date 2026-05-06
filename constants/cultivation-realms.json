@@ -1,41 +1,43 @@
-{
-  "realm": "Body Strengthening",
-  "stages": [
-    {
-      "name": "Skin Refining",
-      "description": "",
-      "lifespanIncrease": 1,
-      "originPointsReward": 1
-    },
-    {
-      "name": "Muscle Cleansing",
-      "description": "",
-      "lifespanIncrease": 1,
-      "originPointsReward": 1
-    },
-    {
-      "name": "Bone Tempering",
-      "description": "",
-      "lifespanIncrease": 1,
-      "originPointsReward": 1
-    },
-    {
-      "name": "Marrow Washing",
-      "description": "",
-      "lifespanIncrease": 1,
-      "originPointsReward": 1
-    },
-    {
-      "name": "Organ Forging",
-      "description": "",
-      "lifespanIncrease": 1,
-      "originPointsReward": 1
-    },
-    {
-      "name": "Meridian Opening",
-      "description": "",
-      "lifespanIncrease": 1,
-      "originPointsReward": 1
-    }
-  ]
-}
+[
+  {
+    "name": "Body Strengthening",
+    "stages": [
+      {
+        "name": "Skin Refining",
+        "description": "",
+        "lifespanIncrease": 1,
+        "originPointsReward": 1
+      },
+      {
+        "name": "Muscle Cleansing",
+        "description": "",
+        "lifespanIncrease": 1,
+        "originPointsReward": 1
+      },
+      {
+        "name": "Bone Tempering",
+        "description": "",
+        "lifespanIncrease": 1,
+        "originPointsReward": 1
+      },
+      {
+        "name": "Marrow Washing",
+        "description": "",
+        "lifespanIncrease": 1,
+        "originPointsReward": 1
+      },
+      {
+        "name": "Organ Forging",
+        "description": "",
+        "lifespanIncrease": 1,
+        "originPointsReward": 1
+      },
+      {
+        "name": "Meridian Opening",
+        "description": "",
+        "lifespanIncrease": 1,
+        "originPointsReward": 1
+      }
+    ]
+  }
+]
