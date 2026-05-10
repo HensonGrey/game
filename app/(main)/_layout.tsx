@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import "../../global.css";
 import Header from "../../components/header";
-import Footer from "../../components/footer";
+// import Footer from "../../components/footer";
 
 export default function MainLayout() {
   return (
@@ -13,7 +13,7 @@ export default function MainLayout() {
         <View className="flex-1 bg-gray-600">
           <Slot />
         </View>
-        <Footer />
+        {/* <Footer /> */}
       </SafeAreaView>
     </SafeAreaProvider>
   );

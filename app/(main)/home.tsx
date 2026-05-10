@@ -1,34 +1,19 @@
 import { View, Text, Pressable } from "react-native";
 import { usePlayerStore } from "../../store/player-store";
 import { realms } from "../../data/cultivation-data";
-import { getRequiredQi } from "../../helpers/cultivation-helper";
+import { useCultivation } from "../../hooks/useCultivation";
 
 export default function HomeScreen() {
-  const addQi = usePlayerStore((state) => state.addQi);
-  const breakthrough = usePlayerStore((state) => state.breakthrough);
-
-  const currentRealmIndex = usePlayerStore((state) => state.currentRealmIndex);
-  const currentStageIndex = usePlayerStore((state) => state.currentStageIndex);
-
-  const currentQi = usePlayerStore((state) => state.qi);
-  const requiredQi = getRequiredQi(currentRealmIndex, currentStageIndex);
-  const spiritualRootIndex = usePlayerStore(
-    (state) => state.spiritualRootIndex,
-  );
-
-  const BASE_MULTIPLIER = 5;
-  const SPIRITUAL_ROOT_MULTIPLIER = Math.ceil(
-    Math.pow(3.3, spiritualRootIndex),
-  );
-  const CULTIVATION_MULTIPLIER = Math.pow(
-    2,
-    currentRealmIndex * 5 + currentStageIndex,
-  );
-
-  const qiMultiplier =
-    BASE_MULTIPLIER * SPIRITUAL_ROOT_MULTIPLIER * CULTIVATION_MULTIPLIER;
-
-  const canBreakthrough = currentQi >= requiredQi;
+  const addQi = usePlayerStore((s) => s.addQi);
+  const breakthrough = usePlayerStore((s) => s.breakthrough);
+  const {
+    qi,
+    realmIndex,
+    stageIndex,
+    requiredQi,
+    qiMultiplier,
+    canBreakthrough,
+  } = useCultivation();
 
   return (
     <Pressable
@@ -37,15 +22,14 @@ export default function HomeScreen() {
     >
       {/* Realm text */}
       <Text className="text-white text-2xl font-bold mb-4">
-        {realms[currentRealmIndex].name} -{" "}
-        {realms[currentRealmIndex].stages[currentStageIndex].name}
+        {realms[realmIndex].name} - {realms[realmIndex].stages[stageIndex].name}
       </Text>
 
       {/* Player */}
       <View className="w-72 h-96 rounded-3xl bg-gray-700 items-center justify-center overflow-hidden">
         <View className="absolute bottom-0 w-full bg-black/60 px-4 py-3 items-center">
           <Text className="text-purple-300 font-bold text-base">
-            {currentQi.toLocaleString()} / {requiredQi.toLocaleString()} Qi
+            {qi.toLocaleString()} / {requiredQi.toLocaleString()} Qi
           </Text>
         </View>
       </View>

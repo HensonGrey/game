@@ -1,41 +1,66 @@
 import { create } from "zustand";
-import { Player } from "../interfaces/player.interface";
+import { Player, Life } from "../interfaces/player.interface";
 import { getNextState, getRequiredQi } from "../helpers/cultivation-helper";
 
 interface PlayerStore extends Player {
+  currentLife: Life;
   addQi: (amount: number) => void;
   breakthrough: () => void;
+  reincarnate: () => void;
 }
 
-const defaultPlayer: Player = {
-  currentRealmIndex: 0,
-  currentStageIndex: 0,
+const INITIAL_LIFE: Life = {
+  realmIndex: 0,
+  stageIndex: 0,
   qi: 0,
-  lifespan: 20,
   currentAge: 0,
-  spiritualRootIndex: 0,
-  vitalityLevel: 0,
-  originPoints: 1000,
+  maxAge: 100,
 };
 
 export const usePlayerStore = create<PlayerStore>((set, get) => ({
-  ...defaultPlayer,
+  spiritualRootIndex: 0,
+  vitalityLevel: 0,
+  originPoints: 0,
+  lives: [],
+  titles: [],
 
-  // Actions
-  addQi: (amount: number) => set((state) => ({ qi: state.qi + amount })),
+  currentLife: { ...INITIAL_LIFE },
+
+  addQi: (amount: number) =>
+    set((state) => ({
+      currentLife: { ...state.currentLife, qi: state.currentLife.qi + amount },
+    })),
 
   breakthrough: () => {
-    const { currentRealmIndex, currentStageIndex, qi } = get();
-    const requiredQi = getRequiredQi(currentRealmIndex, currentStageIndex);
-    const next = getNextState(currentRealmIndex, currentStageIndex);
-    if (!next) return;
+    const { currentLife } = get();
+    const { realmIndex, stageIndex, qi } = currentLife;
+
+    const requiredQi = getRequiredQi(realmIndex, stageIndex);
+    const next = getNextState(realmIndex, stageIndex);
+
+    if (!next || qi < requiredQi) return;
+
+    set((state) => ({
+      originPoints: state.originPoints + next.reward.originPointsReward,
+      currentLife: {
+        ...state.currentLife,
+        realmIndex: next.currentRealmIndex,
+        stageIndex: next.currentStageIndex,
+        qi: qi - requiredQi,
+        maxAge: state.currentLife.maxAge + next.reward.lifespanIncrease,
+      },
+    }));
+  },
+
+  reincarnate: () => {
+    const { vitalityLevel } = get();
+    const upgradedMaxAge = 100 * Math.pow(1.2, vitalityLevel);
 
     set({
-      currentRealmIndex: next.currentRealmIndex,
-      currentStageIndex: next.currentStageIndex,
-      qi: qi - requiredQi,
-      originPoints: get().originPoints + next.reward.originPointsReward,
-      lifespan: get().lifespan + next.reward.lifespanIncrease,
+      currentLife: {
+        ...INITIAL_LIFE,
+        maxAge: upgradedMaxAge,
+      },
     });
   },
 }));

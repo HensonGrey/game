@@ -1,18 +1,18 @@
 export interface Player {
-  // current life information
-  currentRealmIndex: number;
-  currentStageIndex: number;
-
-  qi: number;
-
-  lifespan: number;
-  currentAge: number;
-
   spiritualRootIndex: number;
-
   vitalityLevel: number;
-
   originPoints: number;
-  lives?: any[];
+
+  lives: Life[];
   titles?: any[];
+
+  currentLife: Life;
+}
+
+export interface Life {
+  realmIndex: number;
+  stageIndex: number;
+  qi: number;
+  currentAge: number;
+  maxAge: number;
 }

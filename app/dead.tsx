@@ -1,35 +1,21 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { usePlayerStore } from "../store/player-store";
-import { realms } from "../data/cultivation-data";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { realms } from "../data/cultivation-data";
 
 export default function Dead() {
   const router = useRouter();
 
-  // Strictly using Index naming as requested
-  const currentAge = usePlayerStore((state) => state.currentAge);
-  const currentRealmIndex = usePlayerStore((state) => state.currentRealmIndex);
-  const currentStageIndex = usePlayerStore((state) => state.currentStageIndex);
-
-  const realm = realms[currentRealmIndex] || realms[0];
-  const stage = realm.stages[currentStageIndex] || realm.stages[0];
+  const {currentAge, realmIndex, stageIndex} = usePlayerStore((state) => state.currentLife)
 
   const reincarnate = () => {
-    usePlayerStore.setState({
-      currentAge: 0,
-      qi: 0,
-      originPoints: 1000,
-      lifespan: 80,
-      spiritualRootIndex: 0,
-      currentRealmIndex: 0,
-      currentStageIndex: 0,
-    });
-    router.replace("/");
+    
+    router.replace("/store");
   };
 
   return (
-    <View className="flex-1 bg-slate-950 px-8 justify-center">
+    <View className="flex-1 px-8 justify-center">
       {/* BACKGROUND LAYER - Perfectly Centered Texture */}
       <View className="absolute inset-0 items-center justify-center opacity-5">
         <FontAwesome5 name="yin-yang" size={380} color="white" />
@@ -68,10 +54,10 @@ export default function Dead() {
 
           <View className="items-center bg-purple-500/10 border border-purple-500/20 py-4 px-6 rounded-2xl w-full">
             <Text className="text-purple-400 font-black tracking-widest text-lg uppercase text-center">
-              {realm.name}
+              {realms[realmIndex].name}
             </Text>
             <Text className="text-slate-400 text-xs mt-1 font-medium italic uppercase tracking-tighter">
-              {stage.name}
+              {realms[realmIndex].stages[stageIndex].name}
             </Text>
           </View>
         </View>
@@ -95,7 +81,7 @@ export default function Dead() {
                 pressed ? "text-white" : "text-red-500"
               }`}
             >
-              Enter Reincarnation
+              Prepare For Reincarnation
             </Text>
           )}
         </Pressable>

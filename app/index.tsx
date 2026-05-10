@@ -4,7 +4,6 @@ import { router } from "expo-router";
 
 export default function Loading() {
   useEffect(() => {
-    // Simulate fetching user data
     const fetchData = async () => {
       await new Promise((resolve) => setTimeout(resolve, 1000)); // replace with real fetch
       router.replace("/home");
@@ -14,7 +13,7 @@ export default function Loading() {
   }, []);
 
   return (
-    <View className="flex-1 items-center justify-center bg-gray-900 gap-4">
+    <View className="flex-1 items-center justify-center gap-4">
       <View
         style={{
           width: 120,
