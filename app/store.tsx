@@ -5,18 +5,17 @@ import UpgradeCard from "../components/upgrade-card";
 import UpgradeModal from "../components/upgrade-modal";
 import { Upgrade, UPGRADE_TYPES } from "../interfaces/store-upgrade.interface";
 import { roots } from "../data/spiritual-root-data";
-import { FontAwesome5 } from "@expo/vector-icons"; // Assuming you use Expo/Vector Icons
+import { FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { UpgradeModalInfo } from "../interfaces/upgrade-modal-info.interface";
 
 export default function SystemStore() {
-  const [info, setInfo] = useState<any>({
+  const [info, setInfo] = useState<UpgradeModalInfo>({
     visible: false,
     title: "",
     desc: "",
     level: 0,
-    nextDesc: "",
-    nextLabel: "",
-    levelLabel: "",
+    isMaxed: false,
   });
 
   const spiritualRootIndex = usePlayerStore(
@@ -26,6 +25,7 @@ export default function SystemStore() {
   const originPoints = usePlayerStore((state) => state.originPoints);
 
   const reincarnate = usePlayerStore((state) => state.reincarnate);
+  const purchaseUpgrade = usePlayerStore((s) => s.purchaseUpgrade);
 
   const router = useRouter();
 
@@ -37,28 +37,6 @@ export default function SystemStore() {
         return Math.floor(10 * Math.pow(1.5, vitalityLevel));
       default:
         throw Error("[Store.tsx] - Not implemented exception");
-    }
-  };
-
-  const purchaseUpgrade = (type: UPGRADE_TYPES, cost: number) => {
-    if (originPoints < cost) return;
-
-    switch (type) {
-      case UPGRADE_TYPES.SPIRITUAL_ROOT: {
-        if (spiritualRootIndex >= roots.length - 1) return;
-        usePlayerStore.setState({
-          spiritualRootIndex: spiritualRootIndex + 1,
-          originPoints: originPoints - cost,
-        });
-        break;
-      }
-      case UPGRADE_TYPES.VITALITY: {
-        usePlayerStore.setState({
-          vitalityLevel: vitalityLevel + 1,
-          originPoints: originPoints - cost,
-        });
-        break;
-      }
     }
   };
 
@@ -156,23 +134,15 @@ export default function SystemStore() {
           activeOpacity={0.8}
           onPress={() => {
             reincarnate();
-            router.replace('/home')
+            router.replace("/home");
           }}
         >
-          <Text className="text-white font-bold text-lg">
-            Reincarnate
-          </Text>
+          <Text className="text-white font-bold text-lg">Reincarnate</Text>
         </TouchableOpacity>
       </View>
 
       <UpgradeModal
-        visible={info.visible}
-        desc={info.desc}
-        level={info.level}
-        isMaxed={info.isMaxed}
-        nextDesc={info.nextDesc}
-        nextLabel={info.nextLabel}
-        levelLabel={info.levelLabel}
+        {...info}
         onClose={() => setInfo({ ...info, visible: false })}
       />
     </View>

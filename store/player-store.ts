@@ -1,12 +1,16 @@
 import { create } from "zustand";
-import { Player, Life } from "../interfaces/player.interface";
+import { Life, Player, Title } from "../interfaces/player.interface";
 import { getNextState, getRequiredQi } from "../helpers/cultivation-helper";
+import { roots } from "../data/spiritual-root-data";
+import { UPGRADE_TYPES } from "../interfaces/store-upgrade.interface";
+import { TitleType } from "../enums/title-type.enum";
 
 interface PlayerStore extends Player {
   currentLife: Life;
   addQi: (amount: number) => void;
   breakthrough: () => void;
   reincarnate: () => void;
+  purchaseUpgrade: (type: UPGRADE_TYPES, cost: number) => void;
 }
 
 const INITIAL_LIFE: Life = {
@@ -14,13 +18,13 @@ const INITIAL_LIFE: Life = {
   stageIndex: 0,
   qi: 0,
   currentAge: 0,
-  maxAge: 100,
+  maxAge: Math.floor(Math.random() * 20) + 60,
 };
 
 export const usePlayerStore = create<PlayerStore>((set, get) => ({
-  spiritualRootIndex: 0,
+  spiritualRootIndex: 2,
   vitalityLevel: 0,
-  originPoints: 0,
+  originPoints: 100,
   lives: [],
   titles: [],
 
@@ -30,6 +34,29 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     set((state) => ({
       currentLife: { ...state.currentLife, qi: state.currentLife.qi + amount },
     })),
+
+  purchaseUpgrade: (type: UPGRADE_TYPES, cost: number) => {
+    const { originPoints, spiritualRootIndex, vitalityLevel } = get();
+    if (originPoints < cost) return;
+
+    switch (type) {
+      case UPGRADE_TYPES.SPIRITUAL_ROOT: {
+        if (spiritualRootIndex >= roots.length - 1) return;
+        set({
+          spiritualRootIndex: spiritualRootIndex + 1,
+          originPoints: originPoints - cost,
+        });
+        break;
+      }
+      case UPGRADE_TYPES.VITALITY: {
+        set({
+          vitalityLevel: vitalityLevel + 1,
+          originPoints: originPoints - cost,
+        });
+        break;
+      }
+    }
+  },
 
   breakthrough: () => {
     const { currentLife } = get();
@@ -54,7 +81,9 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
   reincarnate: () => {
     const { vitalityLevel } = get();
-    const upgradedMaxAge = 100 * Math.pow(1.2, vitalityLevel);
+
+    const randomBase = Math.floor(Math.random() * 31) + 50; //reincarnate with a random lifespan of 50-80
+    const upgradedMaxAge = randomBase * Math.pow(1.2, vitalityLevel);
 
     set({
       currentLife: {

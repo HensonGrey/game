@@ -7,10 +7,12 @@ export function useCultivation() {
 
   const requiredQi = getRequiredQi(realmIndex, stageIndex);
 
+  const BASE_MULTIPLIER = 5;
+  const SPIRITUAL_ROOT_MULTIPLIER = Math.ceil(Math.pow(3, spiritualRootIndex));
+  const CULTIVATION_MULTIPLIER = Math.pow(1.4, realmIndex * 4 + stageIndex);
+
   const qiMultiplier =
-    5 *
-    Math.ceil(Math.pow(3.3, spiritualRootIndex)) *
-    Math.pow(2, realmIndex * 5 + stageIndex);
+    BASE_MULTIPLIER * SPIRITUAL_ROOT_MULTIPLIER * CULTIVATION_MULTIPLIER;
 
   return {
     qi,
@@ -19,5 +21,9 @@ export function useCultivation() {
     requiredQi,
     qiMultiplier,
     canBreakthrough: qi >= requiredQi,
+
+    BASE_MULTIPLIER,
+    SPIRITUAL_ROOT_MULTIPLIER,
+    CULTIVATION_MULTIPLIER,
   };
 }

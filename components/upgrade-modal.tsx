@@ -1,14 +1,8 @@
 import { View, Text, Pressable, Modal } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { UpgradeModalInfo } from "../interfaces/upgrade-modal-info.interface";
 
-interface Props {
-  visible: boolean;
-  desc: string;
-  level: number;
-  levelLabel?: string;
-  isMaxed: boolean;
-  nextDesc?: string;
-  nextLabel?: string;
+interface Props extends UpgradeModalInfo {
   onClose: () => void;
 }
 

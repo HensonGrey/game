@@ -39,5 +39,64 @@
         "originPointsReward": 1
       }
     ]
+  },
+  {
+    "name": "Qi Gathering",
+    "stages": [
+      {
+        "name": "1st Heavenly Layer",
+        "description": "",
+        "lifespanIncrease": 1,
+        "originPointsReward": 1
+      },
+      {
+        "name": "2nd Heavenly Layer",
+        "description": "",
+        "lifespanIncrease": 1,
+        "originPointsReward": 1
+      },
+      {
+        "name": "3rd Heavenly Layer",
+        "description": "",
+        "lifespanIncrease": 1,
+        "originPointsReward": 1
+      },
+      {
+        "name": "4th Heavenly Layer",
+        "description": "",
+        "lifespanIncrease": 1,
+        "originPointsReward": 1
+      },
+      {
+        "name": "5th Heavenly Layer",
+        "description": "",
+        "lifespanIncrease": 1,
+        "originPointsReward": 1
+      },
+      {
+        "name": "6th Heavenly Layer",
+        "description": "",
+        "lifespanIncrease": 1,
+        "originPointsReward": 1
+      },
+      {
+        "name": "7th Heavenly Layer",
+        "description": "",
+        "lifespanIncrease": 1,
+        "originPointsReward": 1
+      },
+      {
+        "name": "8th Heavenly Layer",
+        "description": "",
+        "lifespanIncrease": 1,
+        "originPointsReward": 1
+      },
+      {
+        "name": "9th Heavenly Layer",
+        "description": "",
+        "lifespanIncrease": 1,
+        "originPointsReward": 1
+      }
+    ]
   }
 ]

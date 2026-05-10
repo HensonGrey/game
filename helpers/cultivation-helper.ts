@@ -1,8 +1,8 @@
 import { realms } from "../data/cultivation-data";
 
 export const getRequiredQi = (realmId: number, stageId: number): number => {
-  const globalLevel = (realmId + 1) * 6 + stageId;
-  return Math.ceil(20 * Math.pow(globalLevel, 1.5));
+  const globalLevel = realmId * 6 + stageId;
+  return Math.ceil(300 * Math.pow(1.6, globalLevel));
 };
 
 //finds information about the next cultivation stage
@@ -28,3 +28,11 @@ export const getNextState = (realmId: number, stageId: number) => {
     reward: next,
   };
 };
+
+//format number
+export function formatNumbers(value: number): string {
+  if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}b`;
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}m`;
+  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}k`;
+  return value.toLocaleString();
+}
