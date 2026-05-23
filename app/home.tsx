@@ -14,9 +14,6 @@ export default function HomeScreen() {
   const titles = usePlayerStore((state) => state.titles);
   const addQi = usePlayerStore((state) => state.addQi);
   const breakthrough = usePlayerStore((state) => state.breakthrough);
-  const spiritualRootIndex = usePlayerStore(
-    (state) => state.spiritualRootIndex,
-  );
   const currentAge = usePlayerStore((state) => state.currentLife.currentAge);
   const maxAge = usePlayerStore((state) => state.currentLife.maxAge);
 
@@ -41,7 +38,7 @@ export default function HomeScreen() {
           currentAge: state.currentLife.currentAge + 1,
         },
       }));
-    }, 10000);
+    }, 200);
     return () => clearInterval(interval);
   }, []);
 
@@ -190,14 +187,14 @@ export default function HomeScreen() {
               <View className="flex-row justify-between border-b border-white/5 pb-2">
                 <Text className="text-gray-500">Base</Text>
                 <Text className="text-green-400 font-mono">
-                  {BASE_MULTIPLIER}
+                  + {BASE_MULTIPLIER}
                 </Text>
               </View>
 
               <View className="flex-row justify-between border-b border-white/5 pb-2">
                 <Text className="text-gray-500">Cultivation</Text>
                 <Text className="text-green-400 font-mono">
-                  * {CULTIVATION_MULTIPLIER}
+                  * {CULTIVATION_MULTIPLIER.toFixed(0)}
                 </Text>
               </View>
 
