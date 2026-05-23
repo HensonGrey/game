@@ -6,6 +6,9 @@ export interface Life {
   qi: number;
   currentAge: number;
   maxAge: number;
+  currentHp: number;
+  maxHp: number;
+  strength: number;
 }
 
 export interface Title {

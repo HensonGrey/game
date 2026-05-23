@@ -8,6 +8,7 @@ import { roots } from "../data/spiritual-root-data";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { UpgradeModalInfo } from "../interfaces/upgrade-modal-info.interface";
+import { Route } from "../enums/route.enum";
 
 export default function SystemStore() {
   const [info, setInfo] = useState<UpgradeModalInfo>({
@@ -134,7 +135,7 @@ export default function SystemStore() {
           activeOpacity={0.8}
           onPress={() => {
             reincarnate();
-            router.replace("/home");
+            router.replace(Route.HOME);
           }}
         >
           <Text className="text-white font-bold text-lg">Reincarnate</Text>

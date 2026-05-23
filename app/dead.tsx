@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import { usePlayerStore } from "../store/player-store";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { realms } from "../data/cultivation-data";
+import { Route } from "../enums/route.enum";
 
 export default function Dead() {
   const router = useRouter();
@@ -11,7 +12,7 @@ export default function Dead() {
 
   const reincarnate = () => {
     
-    router.replace("/store");
+    router.replace(Route.STORE);
   };
 
   return (

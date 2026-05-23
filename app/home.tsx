@@ -5,7 +5,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { realms } from "../data/cultivation-data";
 import { useCultivation } from "../hooks/useCultivation";
 import { usePlayerStore } from "../store/player-store";
-import { formatNumbers } from "../helpers/cultivation-helper";
+import { formatNumbers, getNextState } from "../helpers/cultivation-helper";
+import { Route } from "../enums/route.enum";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -38,14 +39,14 @@ export default function HomeScreen() {
           currentAge: state.currentLife.currentAge + 1,
         },
       }));
-    }, 200);
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
     const unsub = usePlayerStore.subscribe((state) => {
       if (state.currentLife.currentAge >= state.currentLife.maxAge) {
-        setTimeout(() => router.replace("/dead"), 200);
+        setTimeout(() => router.replace(Route.DEAD), 200);
       }
     });
     return () => unsub();
@@ -104,7 +105,7 @@ export default function HomeScreen() {
 
         {/* Player Card Placeholder */}
         <View className="flex-1 items-center justify-center">
-          <View className="w-full aspect-[3/4] rounded-[40px] bg-gray-800/40 border border-white/10 overflow-hidden shadow-2xl">
+          <View className="w-4/5 aspect-[3/4] rounded-[40px] bg-gray-800/40 border border-white/10 overflow-hidden shadow-2xl">
             {/* This represents where your image will eventually go */}
             <View className="flex-1 items-center justify-center">
               <Text className="text-white/5 text-8xl font-black italic">
@@ -136,14 +137,28 @@ export default function HomeScreen() {
         </View>
 
         {/* Breakthrough Action */}
-        <View className="py-10">
+        <View
+          style={{
+            position: "absolute",
+            bottom: 40,
+            left: 32,
+            right: 32,
+          }}
+        >
           <Pressable
-            disabled={!canBreakthrough}
             onPress={(e) => {
               e.stopPropagation();
-              breakthrough();
+              if (!canBreakthrough) return;
+              const next = getNextState(realmIndex, stageIndex);
+              if (!next) return;
+              if (next.currentRealmIndex !== realmIndex) {
+                router.push(Route.TRIBULATION);
+              } else {
+                breakthrough();
+              }
             }}
             style={{
+              display: canBreakthrough ? "flex" : "none",
               paddingVertical: 20,
               borderRadius: 16,
               alignItems: "center",

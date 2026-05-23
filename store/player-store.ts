@@ -19,10 +19,13 @@ const INITIAL_LIFE: Life = {
   qi: 0,
   currentAge: 0,
   maxAge: Math.floor(Math.random() * 20) + 60,
+  currentHp: 100,
+  maxHp: 100,
+  strength: 10,
 };
 
 export const usePlayerStore = create<PlayerStore>((set, get) => ({
-  spiritualRootIndex: 2,
+  spiritualRootIndex: 5,
   vitalityLevel: 0,
   originPoints: 100,
   lives: [],

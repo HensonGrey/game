@@ -1,12 +1,13 @@
 import { View, ActivityIndicator, Text } from "react-native";
 import { useEffect } from "react";
 import { router } from "expo-router";
+import { Route } from "../enums/route.enum";
 
 export default function Loading() {
   useEffect(() => {
     const fetchData = async () => {
       await new Promise((resolve) => setTimeout(resolve, 1000)); // replace with real fetch
-      router.replace("/home");
+      router.replace(Route.HOME);
     };
 
     fetchData();
