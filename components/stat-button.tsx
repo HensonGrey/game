@@ -12,7 +12,7 @@ interface Props {
 const StatButton = ({ icon, label, color, onPress }: Props) => (
   <Pressable
     onPress={onPress}
-    style={{ minWidth: 110 }}
+    style={{ width: 160 }}
     className="bg-white/5 border border-white/10 px-4 py-2 rounded-full flex-row items-center justify-center"
   >
     <FontAwesome5 name={icon} size={10} color={color} solid />

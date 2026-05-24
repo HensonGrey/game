@@ -13,6 +13,8 @@ import { UPGRADE_TYPES } from "../interfaces/store-upgrade.interface";
 import { Title } from "../enums/title.enum";
 import { TitleType } from "../enums/title-type.enum";
 import { InjuryType } from "../enums/injury-type.enum";
+import { Achievement } from "../enums/achievement.enum";
+import { achievementDefinitions } from "../data/achievement-data";
 import { MIN_LIFESPAN, MAX_LIFESPAN } from "../constants/life-constants";
 import { INJURY_EFFECTS } from "../constants/injury-constants";
 
@@ -24,6 +26,7 @@ interface PlayerStore extends Player {
   reincarnate: () => void;
   inflictInjury: (type: InjuryType) => void;
   purchaseUpgrade: (type: UPGRADE_TYPES, cost: number) => void;
+  claimAchievement: (id: Achievement) => void;
 }
 
 const INITIAL_LIFE: Life = {
@@ -44,13 +47,42 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   originPoints: 100,
   lives: [],
   eternalInjuries: [],
+  totalTaps: 0,
+  claimedAchievements: [],
+  unlockedItems: [],
 
   currentLife: { ...INITIAL_LIFE },
 
   addQi: (amount: number) =>
     set((state) => ({
       currentLife: { ...state.currentLife, qi: state.currentLife.qi + amount },
+      totalTaps: state.totalTaps + 1,
     })),
+
+  claimAchievement: (id: Achievement) => {
+    const { claimedAchievements, unlockedItems, originPoints, totalTaps, currentLife } = get();
+    if (claimedAchievements.includes(id)) return;
+
+    const def = achievementDefinitions[id];
+    const progress = def.getProgress({
+      totalTaps,
+      currentRealmIndex: currentLife.realmIndex,
+    });
+    const done =
+      "completed" in progress ? progress.completed : progress.current >= progress.target;
+    if (!done) return;
+
+    const nextItems =
+      def.itemReward && !unlockedItems.includes(def.itemReward)
+        ? [...unlockedItems, def.itemReward]
+        : unlockedItems;
+
+    set({
+      claimedAchievements: [...claimedAchievements, id],
+      unlockedItems: nextItems,
+      originPoints: originPoints + def.originPointsReward,
+    });
+  },
 
   purchaseUpgrade: (type: UPGRADE_TYPES, cost: number) => {
     const { originPoints, spiritualRootIndex, vitalityLevel } = get();

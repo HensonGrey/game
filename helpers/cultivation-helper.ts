@@ -25,7 +25,7 @@ export const getOriginPointsReward = (
 };
 
 export const getStrength = (realmId: number, stageId: number): number => {
-  return Math.ceil(10 * Math.pow(1.2, getGlobalLevel(realmId, stageId)));
+  return Math.ceil(5 * Math.pow(1.2, getGlobalLevel(realmId, stageId)));
 };
 
 //finds information about the next cultivation stage

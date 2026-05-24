@@ -1,0 +1,4 @@
+export enum Achievement {
+  TEN_THOUSAND_TAPS = "TEN_THOUSAND_TAPS",
+  REACH_GOLDEN_CORE = "REACH_GOLDEN_CORE",
+}
