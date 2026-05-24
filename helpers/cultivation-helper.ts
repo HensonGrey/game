@@ -1,8 +1,21 @@
 import { realms } from "../data/cultivation-data";
 
+export const getGlobalLevel = (realmId: number, stageId: number): number => {
+  let level = stageId;
+  for (let i = 0; i < realmId; i++) level += realms[i].stages.length;
+  return level;
+};
+
 export const getRequiredQi = (realmId: number, stageId: number): number => {
-  const globalLevel = realmId * 6 + stageId;
-  return Math.ceil(300 * Math.pow(1.6, globalLevel));
+  return Math.ceil(300 * Math.pow(1.6, getGlobalLevel(realmId, stageId)));
+};
+
+export const getLifespanIncrease = (realmId: number, stageId: number): number => {
+  return Math.floor(10 * Math.pow(1.2, getGlobalLevel(realmId, stageId)));
+};
+
+export const getOriginPointsReward = (realmId: number, stageId: number): number => {
+  return Math.ceil(5 * Math.pow(1.4, getGlobalLevel(realmId, stageId)));
 };
 
 //finds information about the next cultivation stage

@@ -1,6 +1,11 @@
 import { create } from "zustand";
 import { Life, Player } from "../interfaces/player.interface";
-import { getNextState, getRequiredQi } from "../helpers/cultivation-helper";
+import {
+  getNextState,
+  getRequiredQi,
+  getLifespanIncrease,
+  getOriginPointsReward,
+} from "../helpers/cultivation-helper";
 import { roots } from "../data/spiritual-root-data";
 import { realms } from "../data/cultivation-data";
 import { titleDefinitions } from "../data/title-data";
@@ -75,14 +80,23 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
     if (!next || qi < requiredQi) return;
 
+    const lifespanIncrease = getLifespanIncrease(
+      next.currentRealmIndex,
+      next.currentStageIndex
+    );
+    const originPointsReward = getOriginPointsReward(
+      next.currentRealmIndex,
+      next.currentStageIndex
+    );
+
     set((state) => ({
-      originPoints: state.originPoints + next.reward.originPointsReward,
+      originPoints: state.originPoints + originPointsReward,
       currentLife: {
         ...state.currentLife,
         realmIndex: next.currentRealmIndex,
         stageIndex: next.currentStageIndex,
         qi: qi - requiredQi,
-        maxAge: state.currentLife.maxAge + next.reward.lifespanIncrease,
+        maxAge: state.currentLife.maxAge + lifespanIncrease,
       },
     }));
   },
