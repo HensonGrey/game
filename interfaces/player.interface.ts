@@ -10,7 +10,6 @@ export interface Life {
   maxAge: number;
   currentHp: number;
   maxHp: number;
-  strength: number;
   titles: Title[];
   injuries: InjuryType[];
 }

@@ -1,4 +1,5 @@
-export const BASE_STRIKE_INTERVAL_MS = 700; // Time between lightning strikes at realm 0. Scales down per realm.
+// ─── Lightning ──────────────────────────────────────────────────────────────
+export const BASE_STRIKE_INTERVAL_MS = 1500; // Time between lightning strikes at realm 0. Scales down per realm.
 export const BASE_BURST_DAMAGE = 1; // Instant HP damage dealt by a single lightning strike at realm 0.
 export const BASE_CHARGE_PER_STRIKE = 5; // Aura charge added to the player on each strike at realm 0.
 export const BASE_TAP_RELIEF = 5; // Charge removed from the aura per tap on the player at realm 0.
@@ -11,7 +12,7 @@ export const TAP_RELIEF_FACTOR = 1.15; // Per-realm multiplier on tap relief. Gr
 export const BURST_DAMAGE_FACTOR = 1.25; // Per-realm multiplier on burst damage. Strikes hit harder each realm.
 export const DOT_RATE_FACTOR = 1.2; // Per-realm multiplier on DoT rate. Residual aura burns hotter each realm.
 
-export const COOLDOWN_AFTER_LAST_STRIKE_MS = 1500; // Delay after the final strike before breakthrough resolves and the player is returned home (ms).
+export const COOLDOWN_AFTER_LAST_STRIKE_MS = 700; // Delay after the cloud dies before breakthrough resolves and the player is returned home (ms).
 
 export const LIGHTNING_FLASH_MS = 340; // Duration of a single lightning strike from cloud to player (ms). Higher = slower descent.
 export const BOLT_DESCENT_TICK_MS = 16; // Tick interval for the bolt's progressive descent animation (ms). ~16ms ≈ 60fps.
@@ -23,3 +24,14 @@ export const BOLT_SEGMENTS = [
   { ml: 16, skew: "12deg" },
   { ml: -6, skew: "-10deg" },
 ];
+
+// ─── Cloud ──────────────────────────────────────────────────────────────────
+export const BASE_CLOUD_TAP_DAMAGE = 1; // Damage dealt to the cloud per tap at realm 0.
+export const CLOUD_TAP_DAMAGE_FACTOR = 1.15; // Per-realm multiplier on cloud tap damage.
+
+// HP fraction thresholds at which the cloud loses circles. Each threshold removes 2 circles from the 9-circle cloud bank.
+export const CLOUD_SHRINK_THRESHOLDS = [0.8, 0.5, 0.2] as const;
+
+// Cloud color interpolation endpoints. High HP = aggressive deep indigo; low HP = pale wispy slate.
+export const CLOUD_COLOR_FULL = { r: 76, g: 29, b: 149 };
+export const CLOUD_COLOR_EMPTY = { r: 148, g: 163, b: 184 };

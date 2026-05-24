@@ -6,8 +6,23 @@ import { LightningBolt } from "../components/lightning-bolt";
 import ContinuationModal from "../components/continuation-modal";
 import { useTribulation } from "../hooks/useTribulation";
 import { realms } from "../data/cultivation-data";
+import {
+  CLOUD_COLOR_FULL,
+  CLOUD_COLOR_EMPTY,
+} from "../constants/tribulation-constants";
 
 const PLAYER_WIDTH = 160;
+
+const CLOUD_VISIBILITY = [
+  [3, 3, 3],
+  [2, 3, 2],
+  [1, 3, 1],
+  [0, 3, 0],
+  [0, 0, 0],
+];
+
+const lerp = (a: number, b: number, t: number) =>
+  Math.round(a * t + b * (1 - t));
 
 export default function Tribulation() {
   const {
@@ -19,12 +34,22 @@ export default function Tribulation() {
     boltProgress,
     auraIntensity,
     tapRelease,
+    tapCloud,
+    cloudHp,
+    cloudMaxHp,
+    circlesDestroyed,
     showCongrats,
     newRealmIndex,
     dismissCongrats,
   } = useTribulation();
 
   const newRealm = realms[newRealmIndex];
+
+  const cloudHpFraction = cloudHp / cloudMaxHp;
+  const cloudColor = `rgb(${lerp(CLOUD_COLOR_FULL.r, CLOUD_COLOR_EMPTY.r, cloudHpFraction)}, ${lerp(CLOUD_COLOR_FULL.g, CLOUD_COLOR_EMPTY.g, cloudHpFraction)}, ${lerp(CLOUD_COLOR_FULL.b, CLOUD_COLOR_EMPTY.b, cloudHpFraction)})`;
+  const visibilityIndex = cloudHp <= 0 ? 4 : circlesDestroyed / 2;
+  const [leftCircles, centerCircles, rightCircles] =
+    CLOUD_VISIBILITY[visibilityIndex];
 
   return (
     <View className="flex-1 bg-[#05050a]">
@@ -38,13 +63,43 @@ export default function Tribulation() {
 
       <SafeAreaView className="flex-1 px-8">
         {/* Sky / player area */}
-        <View className="flex-1 mt-4">
-          {/* Cloud bank */}
-          <View className="flex-row justify-center items-end h-20">
-            <Cloud size={48} opacity={0.85} />
-            <Cloud size={68} opacity={0.95} />
-            <Cloud size={52} opacity={0.85} />
+        <View className="flex-1">
+          {/* Cloud HP HUD — absolutely positioned so it can move independently of the cloud bank */}
+          <View
+            className="flex-row items-center justify-center gap-x-2 absolute left-0 right-0"
+            style={{ top: -24 }}
+          >
+            <FontAwesome5 name="cloud" size={16} color={cloudColor} solid />
+            <Text className="text-white font-mono text-base">
+              {Math.ceil(cloudHp)}{" "}
+              <Text className="text-gray-600">/ {Math.ceil(cloudMaxHp)}</Text>
+            </Text>
           </View>
+
+          {/* Cloud bank — tap to damage */}
+          <Pressable
+            onPress={tapCloud}
+            className="flex-row justify-center items-end h-20 mt-6"
+          >
+            <Cloud
+              size={48}
+              opacity={0.85}
+              visibleCircles={leftCircles}
+              color={cloudColor}
+            />
+            <Cloud
+              size={68}
+              opacity={0.95}
+              visibleCircles={centerCircles}
+              color={cloudColor}
+            />
+            <Cloud
+              size={52}
+              opacity={0.85}
+              visibleCircles={rightCircles}
+              color={cloudColor}
+            />
+          </Pressable>
 
           {/* Strike zone */}
           <View className="flex-1 items-center justify-center relative">

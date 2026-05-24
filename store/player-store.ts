@@ -34,7 +34,6 @@ const INITIAL_LIFE: Life = {
   maxAge: Math.floor(Math.random() * 20) + 60,
   currentHp: 100,
   maxHp: 100,
-  strength: 10,
   titles: [],
   injuries: [],
 };

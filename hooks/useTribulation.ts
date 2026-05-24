@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "expo-router";
 import { usePlayerStore } from "../store/player-store";
-import { getNextState } from "../helpers/cultivation-helper";
+import { getNextState, getStrength } from "../helpers/cultivation-helper";
 import { TribulationPhase } from "../enums/tribulation-phase.enum";
 import { Route } from "../enums/route.enum";
 import { InjuryType } from "../enums/injury-type.enum";
@@ -39,12 +39,14 @@ export function useTribulation() {
       chargePerStrike: T.BASE_CHARGE_PER_STRIKE * Math.pow(T.CHARGE_FACTOR, r),
       tapRelief: T.BASE_TAP_RELIEF * Math.pow(T.TAP_RELIEF_FACTOR, r),
       dotRate: T.BASE_DOT_RATE * Math.pow(T.DOT_RATE_FACTOR, r),
-      strikesTotal: 9 * r,
+      cloudMaxHp: getStrength(realmIndex, stageIndex),
+      cloudTapDamage:
+        T.BASE_CLOUD_TAP_DAMAGE * Math.pow(T.CLOUD_TAP_DAMAGE_FACTOR, r),
     };
   }, [targetRealmIndex]);
 
   const [charge, setCharge] = useState(0);
-  const [strikesRemaining, setStrikesRemaining] = useState(tuning.strikesTotal);
+  const [cloudHp, setCloudHp] = useState(tuning.cloudMaxHp);
   const [phase, setPhase] = useState<TribulationPhase>(TribulationPhase.ACTIVE);
   const [flashing, setFlashing] = useState(false);
   const [lightningX, setLightningX] = useState(0.5);
@@ -82,13 +84,6 @@ export function useTribulation() {
     if (phase !== TribulationPhase.ACTIVE) return;
 
     const strikeTimer = setInterval(() => {
-      setStrikesRemaining((remaining) => {
-        if (remaining <= 0) return remaining;
-        const nextRemaining = remaining - 1;
-        if (nextRemaining === 0) setPhase(TribulationPhase.COOLDOWN);
-        return nextRemaining;
-      });
-
       usePlayerStore.setState((state) => ({
         currentLife: {
           ...state.currentLife,
@@ -124,7 +119,11 @@ export function useTribulation() {
 
   // Damage-over-time — while aura charge > 0, drain HP proportionally.
   useEffect(() => {
-    if (phase === TribulationPhase.SUCCEEDED || phase === TribulationPhase.FAILED) return;
+    if (
+      phase === TribulationPhase.SUCCEEDED ||
+      phase === TribulationPhase.FAILED
+    )
+      return;
 
     const dotTimer = setInterval(() => {
       if (chargeRef.current <= 0) return;
@@ -151,7 +150,7 @@ export function useTribulation() {
         injuredRef.current.normal = true;
         inflictInjury(InjuryType.NORMAL);
       }
-      if (hpFraction <= 0.1 && !injuredRef.current.eternal) {
+      if (hpFraction <= 0.2 && !injuredRef.current.eternal) {
         injuredRef.current.eternal = true;
         inflictInjury(InjuryType.ETERNAL);
       }
@@ -164,10 +163,9 @@ export function useTribulation() {
     return () => unsub();
   }, []);
 
-  // Success resolution — once cooldown is entered and aura clears, apply breakthrough and route home.
+  // Success resolution — once cooldown is entered, apply breakthrough and route home.
   useEffect(() => {
     if (phase !== TribulationPhase.COOLDOWN) return;
-    if (charge > 0.5) return;
 
     const t = setTimeout(() => {
       setPhase(TribulationPhase.SUCCEEDED);
@@ -182,11 +180,30 @@ export function useTribulation() {
     }, T.COOLDOWN_AFTER_LAST_STRIKE_MS);
 
     return () => clearTimeout(t);
-  }, [phase, charge]);
+  }, [phase]);
 
   const tapRelease = () => {
-    if (phase === TribulationPhase.SUCCEEDED || phase === TribulationPhase.FAILED) return;
+    if (
+      phase === TribulationPhase.SUCCEEDED ||
+      phase === TribulationPhase.FAILED
+    )
+      return;
     setCharge((c) => Math.max(0, c - tuning.tapRelief));
+  };
+
+  const tapCloud = () => {
+    if (
+      phase === TribulationPhase.SUCCEEDED ||
+      phase === TribulationPhase.FAILED
+    )
+      return;
+    setCloudHp((hp) => {
+      const next = Math.max(0, hp - tuning.cloudTapDamage);
+      if (next === 0 && phaseRef.current === TribulationPhase.ACTIVE) {
+        setPhase(TribulationPhase.COOLDOWN);
+      }
+      return next;
+    });
   };
 
   const dismissCongrats = () => {
@@ -197,18 +214,24 @@ export function useTribulation() {
   const maxChargeForVisual = tuning.chargePerStrike * 2;
   const auraIntensity = Math.min(1, charge / maxChargeForVisual);
 
+  const cloudHpFraction = cloudHp / tuning.cloudMaxHp;
+  const circlesDestroyed =
+    T.CLOUD_SHRINK_THRESHOLDS.filter((t) => cloudHpFraction < t).length * 2;
+
   return {
     currentHp,
     maxHp,
     charge,
-    strikesRemaining,
-    strikesTotal: tuning.strikesTotal,
     phase,
     flashing,
     lightningX,
     boltProgress,
     auraIntensity,
     tapRelease,
+    tapCloud,
+    cloudHp,
+    cloudMaxHp: tuning.cloudMaxHp,
+    circlesDestroyed,
     showCongrats,
     newRealmIndex,
     dismissCongrats,
