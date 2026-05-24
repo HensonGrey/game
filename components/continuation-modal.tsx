@@ -1,0 +1,57 @@
+import { View, Text, Pressable, Modal } from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons";
+
+interface Props {
+  visible: boolean;
+  showIcon?: boolean;
+  title: string;
+  body: string;
+  buttonLabel: string;
+  onDismiss: () => void;
+}
+
+const ContinuationModal = ({
+  visible,
+  showIcon = true,
+  title,
+  body,
+  buttonLabel,
+  onDismiss,
+}: Props) => {
+  return (
+    <Modal
+      animationType="fade"
+      transparent
+      visible={visible}
+      onRequestClose={onDismiss}
+    >
+      <View className="flex-1 bg-black/95 justify-center items-center px-6">
+        <View className="bg-slate-900 w-full rounded-[50px] border border-yellow-500/30 p-8 pt-16 items-center">
+          {showIcon && (
+            <View className="absolute -top-8 w-16 h-16 rounded-full bg-yellow-500/20 border-2 border-yellow-400 items-center justify-center">
+              <FontAwesome5 name="bolt" size={24} color="#facc15" solid />
+            </View>
+          )}
+
+          <Text className="text-yellow-300 text-[10px] font-black uppercase mb-3 tracking-[5px]">
+            {title}
+          </Text>
+          <Text className="text-slate-400 text-center text-xs leading-5 italic mb-8 px-2">
+            {body}
+          </Text>
+
+          <Pressable
+            onPress={onDismiss}
+            className="w-full bg-yellow-500 rounded-full py-4 items-center"
+          >
+            <Text className="text-slate-900 font-black text-sm uppercase tracking-widest">
+              {buttonLabel}
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+export default ContinuationModal;

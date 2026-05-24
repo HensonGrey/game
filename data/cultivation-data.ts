@@ -4,6 +4,7 @@ import { Realm } from "../interfaces/realm.interface";
 export const realms: Realm[] = [
   {
     name: "Body Strengthening",
+    description: "",
     stages: [
       { name: "Skin Refining", description: "" },
       { name: "Muscle Cleansing", description: "" },
@@ -15,6 +16,8 @@ export const realms: Realm[] = [
   },
   {
     name: "Qi Gathering",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     stages: [
       { name: "1st Heavenly Layer", description: "" },
       { name: "2nd Heavenly Layer", description: "" },
@@ -29,6 +32,8 @@ export const realms: Realm[] = [
   },
   {
     name: "Foundation Establishment",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     title: Title.IMMORTAL_MASTER_REINCARNATION,
     stages: [
       { name: "Early Stage", description: "" },
@@ -39,6 +44,8 @@ export const realms: Realm[] = [
   },
   {
     name: "Golden Core",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     title: Title.TRUE_LORD_REINCARNATION,
     stages: [
       { name: "Early Stage", description: "" },

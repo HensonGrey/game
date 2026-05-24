@@ -3,7 +3,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Cloud } from "../components/cloud";
 import { LightningBolt } from "../components/lightning-bolt";
+import ContinuationModal from "../components/continuation-modal";
 import { useTribulation } from "../hooks/useTribulation";
+import { realms } from "../data/cultivation-data";
 
 const PLAYER_WIDTH = 160;
 
@@ -17,7 +19,12 @@ export default function Tribulation() {
     boltProgress,
     auraIntensity,
     tapRelease,
+    showCongrats,
+    newRealmIndex,
+    dismissCongrats,
   } = useTribulation();
+
+  const newRealm = realms[newRealmIndex];
 
   return (
     <View className="flex-1 bg-[#05050a]">
@@ -134,6 +141,14 @@ export default function Tribulation() {
           </View>
         </View>
       </SafeAreaView>
+
+      <ContinuationModal
+        visible={showCongrats}
+        title="Tribulation Survived"
+        body={newRealm?.description ?? ""}
+        buttonLabel="Ascend"
+        onDismiss={dismissCongrats}
+      />
     </View>
   );
 }

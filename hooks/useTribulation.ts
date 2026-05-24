@@ -20,6 +20,13 @@ export function useTribulation() {
     return next ? next.currentRealmIndex : realmIndex + 1;
   }, []);
 
+  const newRealmIndex = useMemo(() => {
+    const next = getNextState(realmIndex, stageIndex);
+    return next ? next.currentRealmIndex : realmIndex;
+  }, []);
+
+  const [showCongrats, setShowCongrats] = useState(false);
+
   const tuning = useMemo(() => {
     const r = targetRealmIndex;
     return {
@@ -134,7 +141,7 @@ export function useTribulation() {
         },
       }));
       breakthrough();
-      router.replace(Route.HOME);
+      setShowCongrats(true);
     }, T.COOLDOWN_AFTER_LAST_STRIKE_MS);
 
     return () => clearTimeout(t);
@@ -143,6 +150,11 @@ export function useTribulation() {
   const tapRelease = () => {
     if (phase === TribulationPhase.SUCCEEDED || phase === TribulationPhase.FAILED) return;
     setCharge((c) => Math.max(0, c - tuning.tapRelief));
+  };
+
+  const dismissCongrats = () => {
+    setShowCongrats(false);
+    router.replace(Route.HOME);
   };
 
   const maxChargeForVisual = tuning.chargePerStrike * 2;
@@ -160,5 +172,8 @@ export function useTribulation() {
     boltProgress,
     auraIntensity,
     tapRelease,
+    showCongrats,
+    newRealmIndex,
+    dismissCongrats,
   };
 }

@@ -8,10 +8,13 @@ import { usePlayerStore } from "../store/player-store";
 import { formatNumbers, getNextState } from "../helpers/cultivation-helper";
 import { getHighestWeightTitle } from "../helpers/title-helper";
 import { Route } from "../enums/route.enum";
+import ContinuationModal from "../components/continuation-modal";
 
 export default function HomeScreen() {
   const router = useRouter();
   const [isStatsVisible, setIsStatsVisible] = useState(false);
+  const [isTribulationConfirmVisible, setIsTribulationConfirmVisible] =
+    useState(false);
 
   const titles = usePlayerStore((state) => state.currentLife.titles);
   const highestTitle = getHighestWeightTitle(titles);
@@ -154,7 +157,7 @@ export default function HomeScreen() {
               const next = getNextState(realmIndex, stageIndex);
               if (!next) return;
               if (next.currentRealmIndex !== realmIndex) {
-                router.push(Route.TRIBULATION);
+                setIsTribulationConfirmVisible(true);
               } else {
                 breakthrough();
               }
@@ -254,6 +257,18 @@ export default function HomeScreen() {
           </View>
         </View>
       </Modal>
+
+      <ContinuationModal
+        visible={isTribulationConfirmVisible}
+        showIcon={false}
+        title="Heavenly Tribulation"
+        body="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Are you prepared to face the trial?"
+        buttonLabel="Begin"
+        onDismiss={() => {
+          setIsTribulationConfirmVisible(false);
+          router.push(Route.TRIBULATION);
+        }}
+      />
     </Pressable>
   );
 }
