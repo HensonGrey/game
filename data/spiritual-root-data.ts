@@ -1,4 +1,28 @@
 import { SpiritualRoot } from "../interfaces/spiritual-root.interface";
-import spiritualRootJson from "../constants/spiritual-root.json";
 
-export const roots: SpiritualRoot[] = spiritualRootJson as SpiritualRoot[];
+export const roots: SpiritualRoot[] = [
+  {
+    rank: "Low Grade",
+    description: "lorem ipsum",
+  },
+  {
+    rank: "Mid Grade",
+    description: "lorem ipsum",
+  },
+  {
+    rank: "High Grade",
+    description: "lorem ipsum",
+  },
+  {
+    rank: "Earth Grade",
+    description: "lorem ipsum",
+  },
+  {
+    rank: "Heaven Grade",
+    description: "",
+  },
+  {
+    rank: "Immortal Grade",
+    description: "",
+  },
+];
