@@ -24,6 +24,7 @@ export default function SystemStore() {
   );
   const vitalityLevel = usePlayerStore((state) => state.vitalityLevel);
   const originPoints = usePlayerStore((state) => state.originPoints);
+  const eternalInjuries = usePlayerStore((state) => state.eternalInjuries);
 
   const reincarnate = usePlayerStore((state) => state.reincarnate);
   const purchaseUpgrade = usePlayerStore((s) => s.purchaseUpgrade);
@@ -36,6 +37,8 @@ export default function SystemStore() {
         return Math.floor(20 * Math.pow(1.5, spiritualRootIndex));
       case UPGRADE_TYPES.VITALITY:
         return Math.floor(10 * Math.pow(1.5, vitalityLevel));
+      case UPGRADE_TYPES.CLEANSE_ETERNAL_INJURIES:
+        return Math.floor(40 * Math.pow(1.6, eternalInjuries.length - 1));
       default:
         throw Error("[Store.tsx] - Not implemented exception");
     }
@@ -69,6 +72,22 @@ export default function SystemStore() {
   };
 
   const upgrades: Upgrade[] = [spiritualRoot, vitality];
+
+  if (eternalInjuries.length > 0) {
+    const count = eternalInjuries.length;
+    upgrades.push({
+      type: UPGRADE_TYPES.CLEANSE_ETERNAL_INJURIES,
+      label: "Cleanse Eternal Injuries",
+      icon: "pray",
+      cost: getUpgradeCost(UPGRADE_TYPES.CLEANSE_ETERNAL_INJURIES),
+      level: count,
+      levelLabel: `${count} INJUR${count === 1 ? "Y" : "IES"}`,
+      isMaxed: false,
+      desc: `Purge every eternal injury you carry. Stat reductions are restored on your next life.`,
+      nextDesc: undefined,
+      nextLabel: undefined,
+    });
+  }
 
   return (
     <View className="flex-1 bg-slate-950">

@@ -46,7 +46,7 @@ const UpgradeCard = ({ upgrade, canAfford, onPress, onInfoPress }: Props) => {
                 {upgrade.label}
               </Text>
               <Text className="text-purple-500/60 text-[9px] font-black uppercase tracking-[2px] mt-1">
-                {`LVL ${upgrade.level}`}
+                {upgrade.levelLabel ?? `LVL ${upgrade.level}`}
               </Text>
             </View>
           </Pressable>

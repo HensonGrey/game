@@ -10,11 +10,17 @@ export const getRequiredQi = (realmId: number, stageId: number): number => {
   return Math.ceil(300 * Math.pow(1.6, getGlobalLevel(realmId, stageId)));
 };
 
-export const getLifespanIncrease = (realmId: number, stageId: number): number => {
-  return Math.floor(10 * Math.pow(1.2, getGlobalLevel(realmId, stageId)));
+export const getLifespanIncrease = (
+  realmId: number,
+  stageId: number,
+): number => {
+  return Math.floor(7 * Math.pow(1.15, getGlobalLevel(realmId, stageId)));
 };
 
-export const getOriginPointsReward = (realmId: number, stageId: number): number => {
+export const getOriginPointsReward = (
+  realmId: number,
+  stageId: number,
+): number => {
   return Math.ceil(5 * Math.pow(1.4, getGlobalLevel(realmId, stageId)));
 };
 

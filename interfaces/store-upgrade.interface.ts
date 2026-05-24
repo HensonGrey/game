@@ -1,6 +1,7 @@
 export enum UPGRADE_TYPES {
   SPIRITUAL_ROOT = "spiritualRoot",
   VITALITY = "vitality",
+  CLEANSE_ETERNAL_INJURIES = "cleanseEternalInjuries",
 }
 
 export interface Upgrade {

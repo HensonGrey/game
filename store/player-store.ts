@@ -12,7 +12,9 @@ import { titleDefinitions } from "../data/title-data";
 import { UPGRADE_TYPES } from "../interfaces/store-upgrade.interface";
 import { Title } from "../enums/title.enum";
 import { TitleType } from "../enums/title-type.enum";
+import { InjuryType } from "../enums/injury-type.enum";
 import { MIN_LIFESPAN, MAX_LIFESPAN } from "../constants/life-constants";
+import { INJURY_EFFECTS } from "../constants/injury-constants";
 
 interface PlayerStore extends Player {
   currentLife: Life;
@@ -20,6 +22,7 @@ interface PlayerStore extends Player {
   breakthrough: () => void;
   recordDeath: () => void;
   reincarnate: () => void;
+  inflictInjury: (type: InjuryType) => void;
   purchaseUpgrade: (type: UPGRADE_TYPES, cost: number) => void;
 }
 
@@ -33,6 +36,7 @@ const INITIAL_LIFE: Life = {
   maxHp: 100,
   strength: 10,
   titles: [],
+  injuries: [],
 };
 
 export const usePlayerStore = create<PlayerStore>((set, get) => ({
@@ -40,6 +44,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   vitalityLevel: 0,
   originPoints: 100,
   lives: [],
+  eternalInjuries: [],
 
   currentLife: { ...INITIAL_LIFE },
 
@@ -64,6 +69,15 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       case UPGRADE_TYPES.VITALITY: {
         set({
           vitalityLevel: vitalityLevel + 1,
+          originPoints: originPoints - cost,
+        });
+        break;
+      }
+      case UPGRADE_TYPES.CLEANSE_ETERNAL_INJURIES: {
+        const { eternalInjuries } = get();
+        if (eternalInjuries.length === 0) return;
+        set({
+          eternalInjuries: [],
           originPoints: originPoints - cost,
         });
         break;
@@ -130,7 +144,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   },
 
   reincarnate: () => {
-    const { lives, vitalityLevel } = get();
+    const { lives, vitalityLevel, eternalInjuries } = get();
 
     const bestPerType = new Map<TitleType, Title>();
     for (const life of lives) {
@@ -146,14 +160,51 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
     const range = MAX_LIFESPAN - MIN_LIFESPAN + 1;
     const randomBase = Math.floor(Math.random() * range) + MIN_LIFESPAN;
-    const upgradedMaxAge = randomBase * Math.pow(1.2, vitalityLevel);
+    let maxAge = randomBase * Math.pow(1.2, vitalityLevel);
+    let maxHp = INITIAL_LIFE.maxHp;
+
+    for (const injury of eternalInjuries) {
+      const effect = INJURY_EFFECTS[injury];
+      maxAge *= 1 - effect.lifespanReduction;
+      maxHp *= 1 - effect.hpReduction;
+    }
 
     set({
       currentLife: {
         ...INITIAL_LIFE,
-        maxAge: upgradedMaxAge,
+        maxAge,
+        maxHp,
+        currentHp: maxHp,
         titles: inheritedTitles,
       },
+    });
+  },
+
+  // HP reduction is deferred — applied at the start of the next tribulation via
+  // useTribulation's mount effect, so the player's HP bar doesn't shrink mid-fight.
+  inflictInjury: (type: InjuryType) => {
+    const effect = INJURY_EFFECTS[type];
+    set((state) => {
+      const life = state.currentLife;
+      const newMaxAge = Math.max(
+        life.currentAge + 1,
+        life.maxAge * (1 - effect.lifespanReduction),
+      );
+
+      if (type === InjuryType.ETERNAL) {
+        return {
+          eternalInjuries: [...state.eternalInjuries, type],
+          currentLife: { ...life, maxAge: newMaxAge },
+        };
+      }
+
+      return {
+        currentLife: {
+          ...life,
+          maxAge: newMaxAge,
+          injuries: [...life.injuries, type],
+        },
+      };
     });
   },
 }));

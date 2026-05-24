@@ -2,17 +2,22 @@ import { View, Text, Pressable, Modal } from "react-native";
 import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { realms } from "../data/cultivation-data";
 import { useCultivation } from "../hooks/useCultivation";
 import { usePlayerStore } from "../store/player-store";
 import { formatNumbers, getNextState } from "../helpers/cultivation-helper";
 import { getHighestWeightTitle } from "../helpers/title-helper";
 import { Route } from "../enums/route.enum";
+import { INJURY_EFFECTS } from "../constants/injury-constants";
 import ContinuationModal from "../components/continuation-modal";
+import StatButton from "../components/stat-button";
+import { ComponentProps } from "react";
 
 export default function HomeScreen() {
   const router = useRouter();
   const [isStatsVisible, setIsStatsVisible] = useState(false);
+  const [isInjuriesVisible, setIsInjuriesVisible] = useState(false);
   const [isTribulationConfirmVisible, setIsTribulationConfirmVisible] =
     useState(false);
 
@@ -33,8 +38,28 @@ export default function HomeScreen() {
     BASE_MULTIPLIER,
     SPIRITUAL_ROOT_MULTIPLIER,
     CULTIVATION_MULTIPLIER,
+    INJURY_MULTIPLIER,
+    injuries,
+    eternalInjuries,
   } = useCultivation();
   const qiProgress = Math.min(qi / requiredQi, 1);
+
+  const statButtons: ComponentProps<typeof StatButton>[] = [
+    {
+      icon: "bolt",
+      label: "stats",
+      color: "#c084fc",
+      onPress: () => setIsStatsVisible(true),
+    },
+  ];
+  if (injuries.length > 0 || eternalInjuries.length > 0) {
+    statButtons.push({
+      icon: "tint",
+      label: "injuries",
+      color: "#ef4444",
+      onPress: () => setIsInjuriesVisible(true),
+    });
+  }
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -80,15 +105,11 @@ export default function HomeScreen() {
             </Text>
           </View>
 
-          {/* the qi multiplier more information button */}
-          <Pressable
-            onPress={() => setIsStatsVisible(true)}
-            className="bg-white/5 border border-white/10 px-4 py-2 rounded-full"
-          >
-            <Text className="text-purple-400 font-bold text-xs uppercase tracking-widest">
-              ⚡ stats
-            </Text>
-          </Pressable>
+          <View className="items-end gap-y-2">
+            {statButtons.map((b) => (
+              <StatButton key={b.label} {...b} />
+            ))}
+          </View>
         </View>
 
         {/* Realm Information */}
@@ -225,6 +246,15 @@ export default function HomeScreen() {
                 </Text>
               </View>
 
+              {INJURY_MULTIPLIER < 1 && (
+                <View className="flex-row justify-between border-b border-white/5 pb-2">
+                  <Text className="text-gray-500">Injuries</Text>
+                  <Text className="text-red-400 font-mono">
+                    * {INJURY_MULTIPLIER.toFixed(2)}
+                  </Text>
+                </View>
+              )}
+
               {/* TODO: cultivation titles */}
               {/* {titles.map((t, i) => (
                 <View
@@ -248,6 +278,64 @@ export default function HomeScreen() {
 
             <Pressable
               onPress={() => setIsStatsVisible(false)}
+              className="bg-white py-4 rounded-xl items-center"
+            >
+              <Text className="text-black font-bold uppercase tracking-widest text-xs">
+                Close
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Injuries Modal */}
+      <Modal
+        animationType="fade"
+        transparent
+        visible={isInjuriesVisible}
+        onRequestClose={() => setIsInjuriesVisible(false)}
+      >
+        <View className="flex-1 justify-center bg-black/90 px-10">
+          <View className="bg-[#1a1a1e] border border-white/10 rounded-[32px] p-8">
+            <Text className="text-white text-xl font-light mb-8 text-center tracking-widest uppercase">
+              Injuries
+            </Text>
+
+            <View className="gap-y-4 mb-10">
+              {injuries.map((type, i) => (
+                <View
+                  key={`n-${i}`}
+                  className="flex-row justify-between items-center border-b border-white/5 pb-2"
+                >
+                  <View className="flex-row items-center">
+                    <FontAwesome5 name="tint" size={12} color="#ef4444" solid />
+                    <Text className="text-red-400 ml-3">Normal Injury</Text>
+                  </View>
+                  <Text className="text-indigo-400 font-mono">
+                    HP & Qi Multiplier ×{" "}
+                    {INJURY_EFFECTS[type].qiMultiplier.toFixed(2)}
+                  </Text>
+                </View>
+              ))}
+
+              {eternalInjuries.map((type, i) => (
+                <View
+                  key={`e-${i}`}
+                  className="flex-row justify-between items-center border-b border-white/5 pb-2"
+                >
+                  <View className="flex-row items-center">
+                    <FontAwesome5 name="tint" size={12} color="#b91c1c" solid />
+                    <Text className="text-red-500 ml-3">Eternal Injury</Text>
+                  </View>
+                  <Text className="text-red-500 font-mono">
+                    × {INJURY_EFFECTS[type].qiMultiplier.toFixed(2)}
+                  </Text>
+                </View>
+              ))}
+            </View>
+
+            <Pressable
+              onPress={() => setIsInjuriesVisible(false)}
               className="bg-white py-4 rounded-xl items-center"
             >
               <Text className="text-black font-bold uppercase tracking-widest text-xs">

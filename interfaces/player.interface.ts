@@ -1,5 +1,6 @@
 import { Title } from "../enums/title.enum";
 import { TitleType } from "../enums/title-type.enum";
+import { InjuryType } from "../enums/injury-type.enum";
 
 export interface Life {
   realmIndex: number;
@@ -11,6 +12,7 @@ export interface Life {
   maxHp: number;
   strength: number;
   titles: Title[];
+  injuries: InjuryType[];
 }
 
 export interface TitleDefinition {
@@ -27,6 +29,7 @@ export interface Player {
   originPoints: number;
 
   lives: Life[];
+  eternalInjuries: InjuryType[]; // injuries that persist across death
 
   currentLife: Life;
 }

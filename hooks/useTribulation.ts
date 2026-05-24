@@ -4,6 +4,8 @@ import { usePlayerStore } from "../store/player-store";
 import { getNextState } from "../helpers/cultivation-helper";
 import { TribulationPhase } from "../enums/tribulation-phase.enum";
 import { Route } from "../enums/route.enum";
+import { InjuryType } from "../enums/injury-type.enum";
+import { INJURY_EFFECTS } from "../constants/injury-constants";
 import * as T from "../constants/tribulation-constants";
 
 export function useTribulation() {
@@ -14,6 +16,7 @@ export function useTribulation() {
   const currentHp = usePlayerStore((s) => s.currentLife.currentHp);
   const maxHp = usePlayerStore((s) => s.currentLife.maxHp);
   const breakthrough = usePlayerStore((s) => s.breakthrough);
+  const inflictInjury = usePlayerStore((s) => s.inflictInjury);
 
   const targetRealmIndex = useMemo(() => {
     const next = getNextState(realmIndex, stageIndex);
@@ -51,6 +54,28 @@ export function useTribulation() {
   phaseRef.current = phase;
   const chargeRef = useRef(charge);
   chargeRef.current = charge;
+  const injuredRef = useRef({ normal: false, eternal: false });
+
+  // Apply pending HP reductions from injuries earned in prior tribulations.
+  // Deferred to mount so the player's HP bar doesn't shrink mid-fight.
+  useEffect(() => {
+    usePlayerStore.setState((state) => {
+      let newMaxHp = 100;
+      for (const t of state.currentLife.injuries) {
+        newMaxHp *= 1 - INJURY_EFFECTS[t].hpReduction;
+      }
+      for (const t of state.eternalInjuries) {
+        newMaxHp *= 1 - INJURY_EFFECTS[t].hpReduction;
+      }
+      return {
+        currentLife: {
+          ...state.currentLife,
+          maxHp: newMaxHp,
+          currentHp: newMaxHp,
+        },
+      };
+    });
+  }, []);
 
   // Strike timer — drives the lightning cadence and damage bursts while ACTIVE.
   useEffect(() => {
@@ -116,10 +141,22 @@ export function useTribulation() {
     return () => clearInterval(dotTimer);
   }, [phase, tuning]);
 
-  // Death watcher — HP hits 0 -> route to /dead.
+  // Death + injury threshold watcher.
   useEffect(() => {
     const unsub = usePlayerStore.subscribe((state) => {
-      if (state.currentLife.currentHp <= 0 && phaseRef.current !== TribulationPhase.FAILED) {
+      const { currentHp, maxHp } = state.currentLife;
+      const hpFraction = currentHp / maxHp;
+
+      if (hpFraction <= 0.5 && !injuredRef.current.normal) {
+        injuredRef.current.normal = true;
+        inflictInjury(InjuryType.NORMAL);
+      }
+      if (hpFraction <= 0.1 && !injuredRef.current.eternal) {
+        injuredRef.current.eternal = true;
+        inflictInjury(InjuryType.ETERNAL);
+      }
+
+      if (currentHp <= 0 && phaseRef.current !== TribulationPhase.FAILED) {
         setPhase(TribulationPhase.FAILED);
         setTimeout(() => router.replace(Route.DEAD), 400);
       }
