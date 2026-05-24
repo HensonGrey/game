@@ -6,13 +6,15 @@ import { realms } from "../data/cultivation-data";
 import { useCultivation } from "../hooks/useCultivation";
 import { usePlayerStore } from "../store/player-store";
 import { formatNumbers, getNextState } from "../helpers/cultivation-helper";
+import { getHighestWeightTitle } from "../helpers/title-helper";
 import { Route } from "../enums/route.enum";
 
 export default function HomeScreen() {
   const router = useRouter();
   const [isStatsVisible, setIsStatsVisible] = useState(false);
 
-  const titles = usePlayerStore((state) => state.titles);
+  const titles = usePlayerStore((state) => state.currentLife.titles);
+  const highestTitle = getHighestWeightTitle(titles);
   const addQi = usePlayerStore((state) => state.addQi);
   const breakthrough = usePlayerStore((state) => state.breakthrough);
   const currentAge = usePlayerStore((state) => state.currentLife.currentAge);
@@ -39,7 +41,7 @@ export default function HomeScreen() {
           currentAge: state.currentLife.currentAge + 1,
         },
       }));
-    }, 10000);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -88,10 +90,10 @@ export default function HomeScreen() {
 
         {/* Realm Information */}
         <View className="items-center mt-10 mb-8">
-          {titles.length > 0 && (
+          {highestTitle && (
             <View className="mb-3 px-3 py-1 border border-cyan-500/30 rounded-sm bg-cyan-500/5">
               <Text className="text-cyan-400 text-[10px] tracking-[5px] font-black uppercase text-center">
-                {titles[0].name}
+                {highestTitle}
               </Text>
             </View>
           )}

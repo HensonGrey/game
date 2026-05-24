@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from "react-native";
+import { useEffect } from "react";
 import { useRouter } from "expo-router";
 import { usePlayerStore } from "../store/player-store";
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -10,8 +11,12 @@ export default function Dead() {
 
   const {currentAge, realmIndex, stageIndex} = usePlayerStore((state) => state.currentLife)
 
+  useEffect(() => {
+    usePlayerStore.getState().recordDeath();
+  }, []);
+
   const reincarnate = () => {
-    
+
     router.replace(Route.STORE);
   };
 

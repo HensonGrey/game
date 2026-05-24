@@ -1,3 +1,4 @@
+import { Title } from "../enums/title.enum";
 import { TitleType } from "../enums/title-type.enum";
 
 export interface Life {
@@ -9,14 +10,15 @@ export interface Life {
   currentHp: number;
   maxHp: number;
   strength: number;
+  titles: Title[];
 }
 
-export interface Title {
-  weight: number; //to display the most "important" title
+export interface TitleDefinition {
+  weight: number;
   name: string;
   type: TitleType;
   description: string;
-  multiplier: number; //example -> boosts cultivation speed / luck / vitality etc by X %
+  multiplier: number;
 }
 
 export interface Player {
@@ -25,7 +27,6 @@ export interface Player {
   originPoints: number;
 
   lives: Life[];
-  titles: Title[];
 
   currentLife: Life;
 }

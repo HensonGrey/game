@@ -104,7 +104,7 @@ export const realms: Realm[] = [
   },
   {
     name: "Foundation Establishment",
-    title: Title.IMMORTAL_MASTER_REINCATION,
+    title: Title.IMMORTAL_MASTER_REINCARNATION,
     stages: [
       {
         name: "Early Stage",
