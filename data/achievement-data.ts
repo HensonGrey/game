@@ -2,8 +2,8 @@ import { Achievement } from "../enums/achievement.enum";
 import { Item } from "../enums/item.enum";
 import { AchievementDefinition } from "../interfaces/achievement.interface";
 
-const GOLDEN_CORE_REALM_INDEX = 3;
-const TAP_TARGET = 10_000;
+const GOLDEN_CORE_REALM_INDEX = 1;
+const TAP_TARGET = 20;
 
 export const achievementDefinitions: Record<
   Achievement,

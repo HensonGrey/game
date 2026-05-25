@@ -8,11 +8,13 @@ export const itemDefinitions: Record<Item, ItemDefinition> = {
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     emoji: "📿",
+    baseCost: 50,
   },
   [Item.SWORD]: {
     name: "Ancestral Sword",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     emoji: "⚔️",
+    baseCost: 100,
   },
 };

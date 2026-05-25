@@ -7,6 +7,7 @@ import { Route } from "../enums/route.enum";
 import { InjuryType } from "../enums/injury-type.enum";
 import { INJURY_EFFECTS } from "../constants/injury-constants";
 import * as T from "../constants/tribulation-constants";
+import { useItem } from "./useItem";
 
 export function useTribulation() {
   const router = useRouter();
@@ -17,6 +18,7 @@ export function useTribulation() {
   const maxHp = usePlayerStore((s) => s.currentLife.maxHp);
   const breakthrough = usePlayerStore((s) => s.breakthrough);
   const inflictInjury = usePlayerStore((s) => s.inflictInjury);
+  const { SWORD_MULTIPLIER } = useItem();
 
   const targetRealmIndex = useMemo(() => {
     const next = getNextState(realmIndex, stageIndex);
@@ -35,7 +37,8 @@ export function useTribulation() {
     return {
       strikeIntervalMs:
         T.BASE_STRIKE_INTERVAL_MS * Math.pow(T.STRIKE_INTERVAL_FACTOR, r),
-      burstDamage: T.BASE_BURST_DAMAGE * Math.pow(T.BURST_DAMAGE_FACTOR, r),
+      burstDamage:
+        T.BASE_BURST_DAMAGE * Math.pow(T.BURST_DAMAGE_FACTOR, r) * SWORD_MULTIPLIER,
       chargePerStrike: T.BASE_CHARGE_PER_STRIKE * Math.pow(T.CHARGE_FACTOR, r),
       tapRelief: T.BASE_TAP_RELIEF * Math.pow(T.TAP_RELIEF_FACTOR, r),
       dotRate: T.BASE_DOT_RATE * Math.pow(T.DOT_RATE_FACTOR, r),
@@ -43,7 +46,7 @@ export function useTribulation() {
       cloudTapDamage:
         T.BASE_CLOUD_TAP_DAMAGE * Math.pow(T.CLOUD_TAP_DAMAGE_FACTOR, r),
     };
-  }, [targetRealmIndex]);
+  }, [targetRealmIndex, SWORD_MULTIPLIER]);
 
   const [charge, setCharge] = useState(0);
   const [cloudHp, setCloudHp] = useState(tuning.cloudMaxHp);

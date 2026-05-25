@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { realms } from "../data/cultivation-data";
 import { useCultivation } from "../hooks/useCultivation";
+import { useItem } from "../hooks/useItem";
 import { usePlayerStore } from "../store/player-store";
 import { formatNumbers, getNextState } from "../helpers/cultivation-helper";
 import { getHighestWeightTitle } from "../helpers/title-helper";
@@ -35,8 +36,10 @@ export default function HomeScreen() {
   const currentAge = usePlayerStore((state) => state.currentLife.currentAge);
   const maxAge = usePlayerStore((state) => state.currentLife.maxAge);
   const totalTaps = usePlayerStore((state) => state.totalTaps);
-  const claimedAchievements = usePlayerStore((state) => state.claimedAchievements);
-  const unlockedItems = usePlayerStore((state) => state.unlockedItems);
+  const claimedAchievements = usePlayerStore(
+    (state) => state.claimedAchievements,
+  );
+  const { unlockedItems, pendantLevel, PENDANT_MULTIPLIER } = useItem();
   const claimAchievement = usePlayerStore((state) => state.claimAchievement);
 
   const {
@@ -86,7 +89,7 @@ export default function HomeScreen() {
           currentAge: state.currentLife.currentAge + 1,
         },
       }));
-    }, 5000);
+    }, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -149,7 +152,7 @@ export default function HomeScreen() {
         {/* Unlocked Items — todo: replace emoji with real artwork */}
         {unlockedItems.length > 0 && (
           <View className="flex-row gap-x-4 justify-center mb-6">
-            {unlockedItems.map((item) => (
+            {unlockedItems.map((item: Item) => (
               <Pressable
                 key={item}
                 onPress={() => setSelectedItem(item)}
@@ -285,6 +288,17 @@ export default function HomeScreen() {
                   <Text className="text-gray-500">Injuries</Text>
                   <Text className="text-red-400 font-mono">
                     * {INJURY_MULTIPLIER.toFixed(2)}
+                  </Text>
+                </View>
+              )}
+
+              {pendantLevel > 0 && (
+                <View className="flex-row justify-between border-b border-white/5 pb-2">
+                  <Text className="text-gray-500">
+                    Pendant (Lv {pendantLevel})
+                  </Text>
+                  <Text className="text-amber-400 font-mono">
+                    * {PENDANT_MULTIPLIER.toFixed(2)}
                   </Text>
                 </View>
               )}

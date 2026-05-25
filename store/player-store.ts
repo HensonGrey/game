@@ -14,7 +14,10 @@ import { Title } from "../enums/title.enum";
 import { TitleType } from "../enums/title-type.enum";
 import { InjuryType } from "../enums/injury-type.enum";
 import { Achievement } from "../enums/achievement.enum";
+import { Item } from "../enums/item.enum";
+import { ITEM_MAX_LEVEL } from "../interfaces/item.interface";
 import { achievementDefinitions } from "../data/achievement-data";
+import { getItemUpgradeCost } from "../helpers/item-helper";
 import { MIN_LIFESPAN, MAX_LIFESPAN } from "../constants/life-constants";
 import { INJURY_EFFECTS } from "../constants/injury-constants";
 
@@ -27,6 +30,7 @@ interface PlayerStore extends Player {
   inflictInjury: (type: InjuryType) => void;
   purchaseUpgrade: (type: UPGRADE_TYPES, cost: number) => void;
   claimAchievement: (id: Achievement) => void;
+  upgradeItem: (item: Item) => void;
 }
 
 const INITIAL_LIFE: Life = {
@@ -42,14 +46,14 @@ const INITIAL_LIFE: Life = {
 };
 
 export const usePlayerStore = create<PlayerStore>((set, get) => ({
-  spiritualRootIndex: 5,
+  spiritualRootIndex: 3,
   vitalityLevel: 0,
   originPoints: 100,
   lives: [],
   eternalInjuries: [],
   totalTaps: 0,
   claimedAchievements: [],
-  unlockedItems: [],
+  itemLevels: {},
 
   currentLife: { ...INITIAL_LIFE },
 
@@ -60,7 +64,13 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     })),
 
   claimAchievement: (id: Achievement) => {
-    const { claimedAchievements, unlockedItems, originPoints, totalTaps, currentLife } = get();
+    const {
+      claimedAchievements,
+      itemLevels,
+      originPoints,
+      totalTaps,
+      currentLife,
+    } = get();
     if (claimedAchievements.includes(id)) return;
 
     const def = achievementDefinitions[id];
@@ -69,18 +79,34 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       currentRealmIndex: currentLife.realmIndex,
     });
     const done =
-      "completed" in progress ? progress.completed : progress.current >= progress.target;
+      "completed" in progress
+        ? progress.completed
+        : progress.current >= progress.target;
     if (!done) return;
 
-    const nextItems =
-      def.itemReward && !unlockedItems.includes(def.itemReward)
-        ? [...unlockedItems, def.itemReward]
-        : unlockedItems;
+    const nextItemLevels = def.itemReward
+      ? { ...itemLevels, [def.itemReward]: itemLevels[def.itemReward] ?? 1 }
+      : itemLevels;
 
     set({
       claimedAchievements: [...claimedAchievements, id],
-      unlockedItems: nextItems,
+      itemLevels: nextItemLevels,
       originPoints: originPoints + def.originPointsReward,
+    });
+  },
+
+  upgradeItem: (item: Item) => {
+    const { itemLevels, originPoints } = get();
+    const currentLevel = itemLevels[item];
+    if (currentLevel === undefined) return; // not unlocked
+    if (currentLevel >= ITEM_MAX_LEVEL) return;
+
+    const cost = getItemUpgradeCost(item, currentLevel);
+    if (originPoints < cost) return;
+
+    set({
+      originPoints: originPoints - cost,
+      itemLevels: { ...itemLevels, [item]: currentLevel + 1 },
     });
   },
 
@@ -127,11 +153,11 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
     const lifespanIncrease = getLifespanIncrease(
       next.currentRealmIndex,
-      next.currentStageIndex
+      next.currentStageIndex,
     );
     const originPointsReward = getOriginPointsReward(
       next.currentRealmIndex,
-      next.currentStageIndex
+      next.currentStageIndex,
     );
 
     set((state) => ({

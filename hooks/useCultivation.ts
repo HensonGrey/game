@@ -1,12 +1,14 @@
 import { usePlayerStore } from "../store/player-store";
 import { getRequiredQi } from "../helpers/cultivation-helper";
 import { INJURY_EFFECTS } from "../constants/injury-constants";
+import { useItem } from "./useItem";
 
 export function useCultivation() {
   const { qi, realmIndex, stageIndex } = usePlayerStore((s) => s.currentLife);
   const spiritualRootIndex = usePlayerStore((s) => s.spiritualRootIndex);
   const injuries = usePlayerStore((s) => s.currentLife.injuries);
   const eternalInjuries = usePlayerStore((s) => s.eternalInjuries);
+  const { PENDANT_MULTIPLIER, pendantLevel } = useItem();
 
   const requiredQi = getRequiredQi(realmIndex, stageIndex);
 
@@ -23,7 +25,8 @@ export function useCultivation() {
     BASE_MULTIPLIER *
     SPIRITUAL_ROOT_MULTIPLIER *
     CULTIVATION_MULTIPLIER *
-    INJURY_MULTIPLIER;
+    INJURY_MULTIPLIER *
+    PENDANT_MULTIPLIER;
 
   return {
     qi,
@@ -37,6 +40,8 @@ export function useCultivation() {
     SPIRITUAL_ROOT_MULTIPLIER,
     CULTIVATION_MULTIPLIER,
     INJURY_MULTIPLIER,
+    PENDANT_MULTIPLIER,
+    pendantLevel,
 
     injuries,
     eternalInjuries,

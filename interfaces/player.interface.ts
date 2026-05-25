@@ -34,7 +34,8 @@ export interface Player {
 
   totalTaps: number; // qi taps accumulated across all lives
   claimedAchievements: Achievement[];
-  unlockedItems: Item[];
+  // Presence = unlocked; value = current level (starts at 1 on unlock, caps at ITEM_MAX_LEVEL).
+  itemLevels: Partial<Record<Item, number>>;
 
   currentLife: Life;
 }
