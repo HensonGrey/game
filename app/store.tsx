@@ -83,7 +83,7 @@ export default function SystemStore() {
       level: count,
       levelLabel: `${count} INJUR${count === 1 ? "Y" : "IES"}`,
       isMaxed: false,
-      desc: `Purge every eternal injury you carry. Stat reductions are restored on your next life.`,
+      desc: `Purge every eternal injury carried. Stat reductions are restored on the next life.`,
       nextDesc: undefined,
       nextLabel: undefined,
     });

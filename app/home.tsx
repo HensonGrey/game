@@ -535,7 +535,16 @@ export default function HomeScreen() {
         visible={isTribulationConfirmVisible}
         showIcon={false}
         title="Heavenly Tribulation"
-        body="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Are you prepared to face the trial?"
+        body={
+          <>
+            To reach for the{" "}
+            <Text className="text-purple-400 font-black not-italic uppercase tracking-widest">
+              {realms[realmIndex + 1]?.name ?? "next"}
+            </Text>{" "}
+            realm is an unforgivable offense against the high heavens. The skies
+            have already gathered to grind such ambition back to dust. Ascend regardless?
+          </>
+        }
         buttonLabel="Begin"
         onDismiss={() => {
           setIsTribulationConfirmVisible(false);

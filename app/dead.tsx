@@ -9,14 +9,15 @@ import { Route } from "../enums/route.enum";
 export default function Dead() {
   const router = useRouter();
 
-  const {currentAge, realmIndex, stageIndex} = usePlayerStore((state) => state.currentLife)
+  const { currentAge, realmIndex, stageIndex } = usePlayerStore(
+    (state) => state.currentLife,
+  );
 
   useEffect(() => {
     usePlayerStore.getState().recordDeath();
   }, []);
 
   const reincarnate = () => {
-
     router.replace(Route.STORE);
   };
 
@@ -32,10 +33,10 @@ export default function Dead() {
         {/* Header Section */}
         <View className="items-center mb-10">
           <Text className="text-red-600 text-6xl font-black italic tracking-tighter">
-            FALLEN
+            DEAD
           </Text>
           <Text className="text-slate-600 text-[10px] font-bold uppercase tracking-[8px] mt-2 ml-2">
-            Physical Coil Severed
+            Dao Extinguished
           </Text>
         </View>
 
@@ -71,8 +72,8 @@ export default function Dead() {
         {/* The Quote - Constrained to prevent scuffed layout */}
         <View className="mt-12 mb-16 px-6">
           <Text className="text-slate-500 text-center italic text-[11px] leading-5">
-            "The cycle of Karma never ends. Your physical body returns to the
-            earth, but your soul carries the spark of the Dao."
+            The cycle of Karma never ends. The flesh returns to the earth; the
+            soul carries the spark of the Dao onward.
           </Text>
         </View>
 

@@ -59,7 +59,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
   addQi: (amount: number) =>
     set((state) => ({
-      currentLife: { ...state.currentLife, qi: state.currentLife.qi + amount },
+      currentLife: { ...state.currentLife, qi: Math.round(state.currentLife.qi + amount) },
       totalTaps: state.totalTaps + 1,
     })),
 

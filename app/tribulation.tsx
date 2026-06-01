@@ -200,7 +200,14 @@ export default function Tribulation() {
       <ContinuationModal
         visible={showCongrats}
         title="Tribulation Survived"
-        body={newRealm?.description ?? ""}
+        body={
+          <>
+            <Text className="text-purple-400 font-black not-italic uppercase tracking-widest">
+              {newRealm?.name ?? ""}
+            </Text>
+            {newRealm?.description ? ` — ${newRealm.description}` : ""}
+          </>
+        }
         buttonLabel="Ascend"
         onDismiss={dismissCongrats}
       />

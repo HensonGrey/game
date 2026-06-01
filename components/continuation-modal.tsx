@@ -1,11 +1,12 @@
 import { View, Text, Pressable, Modal } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { ReactNode } from "react";
 
 interface Props {
   visible: boolean;
   showIcon?: boolean;
   title: string;
-  body: string;
+  body: ReactNode;
   buttonLabel: string;
   onDismiss: () => void;
 }
@@ -33,10 +34,10 @@ const ContinuationModal = ({
             </View>
           )}
 
-          <Text className="text-yellow-300 text-[10px] font-black uppercase mb-3 tracking-[5px]">
+          <Text className="text-yellow-300 text-lg font-black uppercase mb-4 tracking-[5px]">
             {title}
           </Text>
-          <Text className="text-slate-400 text-center text-xs leading-5 italic mb-8 px-2">
+          <Text className="text-slate-400 text-center text-sm leading-6 italic mb-8 px-2">
             {body}
           </Text>
 
