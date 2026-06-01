@@ -1,7 +1,7 @@
 import { View, Text, Pressable, Modal } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { Item } from "../enums/item.enum";
-import { itemDefinitions } from "../data/item-data";
+import { ItemEnum } from "../enums/item.enum";
+import { items } from "../data/item-data";
 import { ITEM_MAX_LEVEL } from "../interfaces/item.interface";
 import {
   getPendantQiBoost,
@@ -10,17 +10,17 @@ import {
 import { useItem } from "../hooks/useItem";
 
 interface Props {
-  item: Item | null;
+  item: ItemEnum | null;
   onClose: () => void;
 }
 
-const getEffectLabel = (item: Item, level: number): string => {
+const getEffectLabel = (item: ItemEnum, level: number): string => {
   switch (item) {
-    case Item.PENDANT: {
+    case ItemEnum.PENDANT: {
       const pct = Math.round((getPendantQiBoost(level) - 1) * 100);
       return `+${pct}% Qi multiplier`;
     }
-    case Item.SWORD: {
+    case ItemEnum.SWORD: {
       const pct = Math.round((1 - getSwordDmgReduction(level)) * 100);
       return `-${pct}% tribulation damage`;
     }
@@ -30,7 +30,7 @@ const getEffectLabel = (item: Item, level: number): string => {
 const ItemModal = ({ item, onClose }: Props) => {
   const { getUpgradeInfo, upgradeItem } = useItem();
 
-  const def = item ? itemDefinitions[item] : null;
+  const def = item ? items.find((i) => i.id === item) : null;
   const { level, atMax, cost, canAfford } = item
     ? getUpgradeInfo(item)
     : { level: 0, atMax: false, cost: 0, canAfford: false };

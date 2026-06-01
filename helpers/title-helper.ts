@@ -1,9 +1,12 @@
-import { Title } from "../enums/title.enum";
-import { titleDefinitions } from "../data/title-data";
+import { TitleEnum } from "../enums/title.enum";
+import { titles } from "../data/title-data";
 
-export const getHighestWeightTitle = (titles: Title[]): Title | undefined => {
-  if (titles.length === 0) return undefined;
-  return [...titles].sort(
-    (a, b) => titleDefinitions[b].weight - titleDefinitions[a].weight
-  )[0];
+const getWeight = (name: TitleEnum) =>
+  titles.find((t) => t.name === name)?.weight ?? 0;
+
+export const getHighestWeightTitle = (
+  owned: TitleEnum[],
+): TitleEnum | undefined => {
+  if (owned.length === 0) return undefined;
+  return [...owned].sort((a, b) => getWeight(b) - getWeight(a))[0];
 };

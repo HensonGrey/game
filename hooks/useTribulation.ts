@@ -4,8 +4,8 @@ import { usePlayerStore } from "../store/player-store";
 import { getNextState, getStrength } from "../helpers/cultivation-helper";
 import { TribulationPhase } from "../enums/tribulation-phase.enum";
 import { Route } from "../enums/route.enum";
-import { InjuryType } from "../enums/injury-type.enum";
-import { INJURY_EFFECTS } from "../constants/injury-constants";
+import { InjuryTypeEnum } from "../enums/injury-type.enum";
+import { injuryTypes } from "../constants/injury-constants";
 import * as T from "../constants/tribulation-constants";
 import { useItem } from "./useItem";
 
@@ -66,11 +66,13 @@ export function useTribulation() {
   useEffect(() => {
     usePlayerStore.setState((state) => {
       let newMaxHp = 100;
+      const hpReductionFor = (id: InjuryTypeEnum) =>
+        injuryTypes.find((i) => i.id === id)?.hpReduction ?? 0;
       for (const t of state.currentLife.injuries) {
-        newMaxHp *= 1 - INJURY_EFFECTS[t].hpReduction;
+        newMaxHp *= 1 - hpReductionFor(t);
       }
       for (const t of state.eternalInjuries) {
-        newMaxHp *= 1 - INJURY_EFFECTS[t].hpReduction;
+        newMaxHp *= 1 - hpReductionFor(t);
       }
       return {
         currentLife: {
@@ -151,11 +153,11 @@ export function useTribulation() {
 
       if (hpFraction <= 0.5 && !injuredRef.current.normal) {
         injuredRef.current.normal = true;
-        inflictInjury(InjuryType.NORMAL);
+        inflictInjury(InjuryTypeEnum.NORMAL);
       }
       if (hpFraction <= 0.2 && !injuredRef.current.eternal) {
         injuredRef.current.eternal = true;
-        inflictInjury(InjuryType.ETERNAL);
+        inflictInjury(InjuryTypeEnum.ETERNAL);
       }
 
       if (currentHp <= 0 && phaseRef.current !== TribulationPhase.FAILED) {

@@ -10,11 +10,10 @@ import { usePlayerStore } from "../store/player-store";
 import { formatNumbers, getNextState } from "../helpers/cultivation-helper";
 import { getHighestWeightTitle } from "../helpers/title-helper";
 import { Route } from "../enums/route.enum";
-import { Achievement } from "../enums/achievement.enum";
-import { Item } from "../enums/item.enum";
-import { INJURY_EFFECTS } from "../constants/injury-constants";
-import { achievementDefinitions } from "../data/achievement-data";
-import { itemDefinitions } from "../data/item-data";
+import { ItemEnum } from "../enums/item.enum";
+import { injuryTypes } from "../constants/injury-constants";
+import { achievements } from "../data/achievement-data";
+import { items } from "../data/item-data";
 import ContinuationModal from "../components/continuation-modal";
 import ItemModal from "../components/item-modal";
 import StatButton from "../components/stat-button";
@@ -25,7 +24,7 @@ export default function HomeScreen() {
   const [isStatsVisible, setIsStatsVisible] = useState(false);
   const [isInjuriesVisible, setIsInjuriesVisible] = useState(false);
   const [isAchievementsVisible, setIsAchievementsVisible] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+  const [selectedItem, setSelectedItem] = useState<ItemEnum | null>(null);
   const [isTribulationConfirmVisible, setIsTribulationConfirmVisible] =
     useState(false);
 
@@ -125,7 +124,7 @@ export default function HomeScreen() {
             </Text>
           </View>
 
-          <View className="items-end gap-y-2">
+          <View className="flex-row items-center gap-x-5">
             {statButtons.map((b) => (
               <StatButton key={b.label} {...b} />
             ))}
@@ -151,15 +150,11 @@ export default function HomeScreen() {
 
         {/* Unlocked Items — todo: replace emoji with real artwork */}
         {unlockedItems.length > 0 && (
-          <View className="flex-row gap-x-4 justify-center mb-6">
-            {unlockedItems.map((item: Item) => (
-              <Pressable
-                key={item}
-                onPress={() => setSelectedItem(item)}
-                className="w-16 h-16 rounded-2xl bg-gray-800/40 border border-white/10 items-center justify-center"
-              >
-                <Text style={{ fontSize: 28 }}>
-                  {itemDefinitions[item].emoji}
+          <View className="flex-row gap-x-6 justify-center mb-6">
+            {unlockedItems.map((item: ItemEnum) => (
+              <Pressable key={item} onPress={() => setSelectedItem(item)}>
+                <Text style={{ fontSize: 48 }}>
+                  {items.find((i) => i.id === item)?.emoji ?? ""}
                 </Text>
               </Pressable>
             ))}
@@ -361,7 +356,7 @@ export default function HomeScreen() {
                   </View>
                   <Text className="text-indigo-400 font-mono">
                     HP & Qi Multiplier ×{" "}
-                    {INJURY_EFFECTS[type].qiMultiplier.toFixed(2)}
+                    {(injuryTypes.find((i) => i.id === type)?.qiMultiplier ?? 1).toFixed(2)}
                   </Text>
                 </View>
               ))}
@@ -376,7 +371,7 @@ export default function HomeScreen() {
                     <Text className="text-red-500 ml-3">Eternal Injury</Text>
                   </View>
                   <Text className="text-red-500 font-mono">
-                    × {INJURY_EFFECTS[type].qiMultiplier.toFixed(2)}
+                    × {(injuryTypes.find((i) => i.id === type)?.qiMultiplier ?? 1).toFixed(2)}
                   </Text>
                 </View>
               ))}
@@ -408,8 +403,8 @@ export default function HomeScreen() {
             </Text>
 
             <View className="gap-y-3 mb-8">
-              {Object.values(Achievement).map((id) => {
-                const def = achievementDefinitions[id];
+              {achievements.map((def) => {
+                const id = def.id;
                 const progress = def.getProgress({
                   totalTaps,
                   currentRealmIndex: realmIndex,
@@ -425,7 +420,7 @@ export default function HomeScreen() {
                     : 0;
                 const claimed = claimedAchievements.includes(id);
                 const rewardItem = def.itemReward
-                  ? itemDefinitions[def.itemReward]
+                  ? items.find((i) => i.id === def.itemReward)
                   : null;
 
                 return (

@@ -1,20 +1,23 @@
-import { InjuryType } from "../enums/injury-type.enum";
+import { InjuryTypeEnum } from "../enums/injury-type.enum";
 
-interface InjuryEffect {
+export interface InjuryType {
+  id: InjuryTypeEnum;
   lifespanReduction: number;
   hpReduction: number;
   qiMultiplier: number;
 }
 
-export const INJURY_EFFECTS: Record<InjuryType, InjuryEffect> = {
-  [InjuryType.NORMAL]: {
+export const injuryTypes: InjuryType[] = [
+  {
+    id: InjuryTypeEnum.NORMAL,
     lifespanReduction: 0.05,
     hpReduction: 0.05,
     qiMultiplier: 0.9,
   },
-  [InjuryType.ETERNAL]: {
+  {
+    id: InjuryTypeEnum.ETERNAL,
     lifespanReduction: 0.15,
     hpReduction: 0.1,
     qiMultiplier: 0.75,
   },
-};
+];

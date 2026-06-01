@@ -1,5 +1,5 @@
 import { usePlayerStore } from "../store/player-store";
-import { Item } from "../enums/item.enum";
+import { ItemEnum } from "../enums/item.enum";
 import {
   getItemUpgradeCost,
   getPendantQiBoost,
@@ -12,15 +12,15 @@ export function useItem() {
   const originPoints = usePlayerStore((s) => s.originPoints);
   const upgradeItem = usePlayerStore((s) => s.upgradeItem);
 
-  const pendantLevel = itemLevels[Item.PENDANT] ?? 0;
-  const swordLevel = itemLevels[Item.SWORD] ?? 0;
+  const pendantLevel = itemLevels[ItemEnum.PENDANT] ?? 0;
+  const swordLevel = itemLevels[ItemEnum.SWORD] ?? 0;
 
   const PENDANT_MULTIPLIER = getPendantQiBoost(pendantLevel);
   const SWORD_MULTIPLIER = getSwordDmgReduction(swordLevel);
 
-  const unlockedItems = Object.keys(itemLevels) as Item[];
+  const unlockedItems = Object.keys(itemLevels) as ItemEnum[];
 
-  const getUpgradeInfo = (item: Item) => {
+  const getUpgradeInfo = (item: ItemEnum) => {
     const level = itemLevels[item] ?? 0;
     const atMax = level >= ITEM_MAX_LEVEL;
     const cost = atMax ? 0 : getItemUpgradeCost(item, level);

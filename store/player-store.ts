@@ -8,18 +8,18 @@ import {
 } from "../helpers/cultivation-helper";
 import { roots } from "../data/spiritual-root-data";
 import { realms } from "../data/cultivation-data";
-import { titleDefinitions } from "../data/title-data";
+import { titles } from "../data/title-data";
 import { UPGRADE_TYPES } from "../interfaces/store-upgrade.interface";
-import { Title } from "../enums/title.enum";
+import { TitleEnum } from "../enums/title.enum";
 import { TitleType } from "../enums/title-type.enum";
-import { InjuryType } from "../enums/injury-type.enum";
-import { Achievement } from "../enums/achievement.enum";
-import { Item } from "../enums/item.enum";
+import { InjuryTypeEnum } from "../enums/injury-type.enum";
+import { AchievementEnum } from "../enums/achievement.enum";
+import { ItemEnum } from "../enums/item.enum";
 import { ITEM_MAX_LEVEL } from "../interfaces/item.interface";
-import { achievementDefinitions } from "../data/achievement-data";
+import { achievements } from "../data/achievement-data";
 import { getItemUpgradeCost } from "../helpers/item-helper";
 import { MIN_LIFESPAN, MAX_LIFESPAN } from "../constants/life-constants";
-import { INJURY_EFFECTS } from "../constants/injury-constants";
+import { injuryTypes } from "../constants/injury-constants";
 
 interface PlayerStore extends Player {
   currentLife: Life;
@@ -27,10 +27,10 @@ interface PlayerStore extends Player {
   breakthrough: () => void;
   recordDeath: () => void;
   reincarnate: () => void;
-  inflictInjury: (type: InjuryType) => void;
+  inflictInjury: (type: InjuryTypeEnum) => void;
   purchaseUpgrade: (type: UPGRADE_TYPES, cost: number) => void;
-  claimAchievement: (id: Achievement) => void;
-  upgradeItem: (item: Item) => void;
+  claimAchievement: (id: AchievementEnum) => void;
+  upgradeItem: (item: ItemEnum) => void;
 }
 
 const INITIAL_LIFE: Life = {
@@ -63,7 +63,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       totalTaps: state.totalTaps + 1,
     })),
 
-  claimAchievement: (id: Achievement) => {
+  claimAchievement: (id: AchievementEnum) => {
     const {
       claimedAchievements,
       itemLevels,
@@ -73,7 +73,9 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     } = get();
     if (claimedAchievements.includes(id)) return;
 
-    const def = achievementDefinitions[id];
+    const def = achievements.find((a) => a.id === id);
+    if (!def) return;
+
     const progress = def.getProgress({
       totalTaps,
       currentRealmIndex: currentLife.realmIndex,
@@ -95,7 +97,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     });
   },
 
-  upgradeItem: (item: Item) => {
+  upgradeItem: (item: ItemEnum) => {
     const { itemLevels, originPoints } = get();
     const currentLevel = itemLevels[item];
     if (currentLevel === undefined) return; // not unlocked
@@ -203,12 +205,16 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   reincarnate: () => {
     const { lives, vitalityLevel, eternalInjuries } = get();
 
-    const bestPerType = new Map<TitleType, Title>();
+    const bestPerType = new Map<TitleType, TitleEnum>();
     for (const life of lives) {
       for (const t of life.titles) {
-        const def = titleDefinitions[t];
+        const def = titles.find((d) => d.name === t);
+        if (!def) continue;
         const currentBest = bestPerType.get(def.type);
-        if (!currentBest || titleDefinitions[currentBest].weight < def.weight) {
+        const currentBestWeight = currentBest
+          ? (titles.find((d) => d.name === currentBest)?.weight ?? 0)
+          : -Infinity;
+        if (currentBestWeight < def.weight) {
           bestPerType.set(def.type, t);
         }
       }
@@ -221,7 +227,8 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     let maxHp = INITIAL_LIFE.maxHp;
 
     for (const injury of eternalInjuries) {
-      const effect = INJURY_EFFECTS[injury];
+      const effect = injuryTypes.find((i) => i.id === injury);
+      if (!effect) continue;
       maxAge *= 1 - effect.lifespanReduction;
       maxHp *= 1 - effect.hpReduction;
     }
@@ -239,8 +246,9 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
   // HP reduction is deferred — applied at the start of the next tribulation via
   // useTribulation's mount effect, so the player's HP bar doesn't shrink mid-fight.
-  inflictInjury: (type: InjuryType) => {
-    const effect = INJURY_EFFECTS[type];
+  inflictInjury: (type: InjuryTypeEnum) => {
+    const effect = injuryTypes.find((i) => i.id === type);
+    if (!effect) return;
     set((state) => {
       const life = state.currentLife;
       const newMaxAge = Math.max(
@@ -248,7 +256,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         life.maxAge * (1 - effect.lifespanReduction),
       );
 
-      if (type === InjuryType.ETERNAL) {
+      if (type === InjuryTypeEnum.ETERNAL) {
         return {
           eternalInjuries: [...state.eternalInjuries, type],
           currentLife: { ...life, maxAge: newMaxAge },

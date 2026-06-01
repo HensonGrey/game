@@ -1,6 +1,6 @@
 import { usePlayerStore } from "../store/player-store";
 import { getRequiredQi } from "../helpers/cultivation-helper";
-import { INJURY_EFFECTS } from "../constants/injury-constants";
+import { injuryTypes } from "../constants/injury-constants";
 import { useItem } from "./useItem";
 
 export function useCultivation() {
@@ -17,7 +17,8 @@ export function useCultivation() {
   const CULTIVATION_MULTIPLIER = Math.pow(1.4, realmIndex * 4 + stageIndex);
 
   const INJURY_MULTIPLIER = [...injuries, ...eternalInjuries].reduce(
-    (acc, type) => acc * INJURY_EFFECTS[type].qiMultiplier,
+    (acc, type) =>
+      acc * (injuryTypes.find((i) => i.id === type)?.qiMultiplier ?? 1),
     1,
   );
 

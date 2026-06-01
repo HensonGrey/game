@@ -1,4 +1,4 @@
-import { Pressable, Text } from "react-native";
+import { Pressable } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { ComponentProps } from "react";
 
@@ -9,19 +9,13 @@ interface Props {
   onPress: () => void;
 }
 
-const StatButton = ({ icon, label, color, onPress }: Props) => (
+const StatButton = ({ icon, color, onPress }: Props) => (
   <Pressable
     onPress={onPress}
-    style={{ width: 160 }}
-    className="bg-white/5 border border-white/10 px-4 py-2 rounded-full flex-row items-center justify-center"
+    className="w-12 h-12 rounded-full items-center justify-center bg-white/5 border active:bg-white/10"
+    style={{ borderColor: `${color}66` }}
   >
-    <FontAwesome5 name={icon} size={10} color={color} solid />
-    <Text
-      style={{ color }}
-      className="font-bold text-xs uppercase tracking-widest ml-2"
-    >
-      {label}
-    </Text>
+    <FontAwesome5 name={icon} size={20} color={color} solid />
   </Pressable>
 );
 

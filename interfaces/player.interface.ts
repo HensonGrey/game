@@ -1,8 +1,8 @@
-import { Title } from "../enums/title.enum";
+import { TitleEnum } from "../enums/title.enum";
 import { TitleType } from "../enums/title-type.enum";
-import { InjuryType } from "../enums/injury-type.enum";
-import { Achievement } from "../enums/achievement.enum";
-import { Item } from "../enums/item.enum";
+import { InjuryTypeEnum } from "../enums/injury-type.enum";
+import { AchievementEnum } from "../enums/achievement.enum";
+import { ItemEnum } from "../enums/item.enum";
 
 export interface Life {
   realmIndex: number;
@@ -12,13 +12,13 @@ export interface Life {
   maxAge: number;
   currentHp: number;
   maxHp: number;
-  titles: Title[];
-  injuries: InjuryType[];
+  titles: TitleEnum[];
+  injuries: InjuryTypeEnum[];
 }
 
-export interface TitleDefinition {
+export interface Title {
+  name: TitleEnum;
   weight: number;
-  name: string;
   type: TitleType;
   description: string;
   multiplier: number;
@@ -30,12 +30,12 @@ export interface Player {
   originPoints: number;
 
   lives: Life[];
-  eternalInjuries: InjuryType[]; // injuries that persist across death
+  eternalInjuries: InjuryTypeEnum[]; // injuries that persist across death
 
   totalTaps: number; // qi taps accumulated across all lives
-  claimedAchievements: Achievement[];
+  claimedAchievements: AchievementEnum[];
   // Presence = unlocked; value = current level (starts at 1 on unlock, caps at ITEM_MAX_LEVEL).
-  itemLevels: Partial<Record<Item, number>>;
+  itemLevels: Partial<Record<ItemEnum, number>>;
 
   currentLife: Life;
 }

@@ -1,4 +1,4 @@
-import { Title } from "../enums/title.enum";
+import { TitleEnum } from "../enums/title.enum";
 import { Realm } from "../interfaces/realm.interface";
 
 export const realms: Realm[] = [
@@ -34,7 +34,7 @@ export const realms: Realm[] = [
     name: "Foundation Establishment",
     description:
       "Supreme! Lifespans of thousands of years are no obstacle, and mountains tremble beneath their gaze.",
-    title: Title.IMMORTAL_MASTER_REINCARNATION,
+    title: TitleEnum.IMMORTAL_MASTER_REINCARNATION,
     stages: [
       { name: "Early Stage" },
       { name: "Middle Stage" },
@@ -46,7 +46,7 @@ export const realms: Realm[] = [
     name: "Golden Core",
     description:
       "True Lord. A core of compressed Dao spins within the dantian — and the Heavens count its bearer among enemies, not subjects.",
-    title: Title.TRUE_LORD_REINCARNATION,
+    title: TitleEnum.TRUE_LORD_REINCARNATION,
     stages: [
       { name: "Early Stage" },
       { name: "Middle Stage" },
@@ -58,7 +58,7 @@ export const realms: Realm[] = [
     name: "Nascent Soul",
     description:
       "Dao Lord. The golden core ruptures and births a second self — soul and body walk apart, and a single thought reshapes the land for a thousand miles.",
-    title: Title.DAO_LORD_REINCARNATION,
+    title: TitleEnum.DAO_LORD_REINCARNATION,
     stages: [
       { name: "Early Stage" },
       { name: "Middle Stage" },

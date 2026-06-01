@@ -1,4 +1,4 @@
-export enum InjuryType {
+export enum InjuryTypeEnum {
   NORMAL = "normal",
   ETERNAL = "eternal",
 }

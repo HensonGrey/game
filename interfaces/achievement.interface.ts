@@ -1,6 +1,7 @@
 import { ComponentProps } from "react";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { Item } from "../enums/item.enum";
+import { AchievementEnum } from "../enums/achievement.enum";
+import { ItemEnum } from "../enums/item.enum";
 
 export interface AchievementProgressSource {
   totalTaps: number;
@@ -11,11 +12,12 @@ export type AchievementProgress =
   | { current: number; target: number }
   | { completed: boolean };
 
-export interface AchievementDefinition {
+export interface Achievement {
+  id: AchievementEnum;
   name: string;
   description: string;
   icon: ComponentProps<typeof FontAwesome5>["name"];
   originPointsReward: number;
-  itemReward?: Item;
+  itemReward?: ItemEnum;
   getProgress: (state: AchievementProgressSource) => AchievementProgress;
 }

@@ -1,7 +1,10 @@
+import { ItemEnum } from "../enums/item.enum";
+
 export const ITEM_MAX_LEVEL = 10;
 export const ITEM_COST_GROWTH = 1.8;
 
-export interface ItemDefinition {
+export interface Item {
+  id: ItemEnum;
   name: string;
   description: string;
   // todo: replace with real artwork; emoji is a stand-in
