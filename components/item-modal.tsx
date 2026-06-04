@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Modal } from "react-native";
+import { View, Text, Pressable, Modal, Image } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { ItemEnum } from "../enums/item.enum";
 import { items } from "../data/item-data";
@@ -62,8 +62,14 @@ const ItemModal = ({ item, onClose }: Props) => {
           </Pressable>
 
           {/* Item badge */}
-          <View className="w-20 h-20 rounded-3xl bg-gray-800/60 border border-white/10 items-center justify-center mb-5">
-            <Text style={{ fontSize: 40 }}>{def?.emoji ?? ""}</Text>
+          <View className="w-20 h-20 rounded-3xl bg-gray-800/60 border border-white/10 items-center justify-center mb-5 overflow-hidden">
+            {def && (
+              <Image
+                source={def.image}
+                resizeMode="contain"
+                style={{ width: 64, height: 64 }}
+              />
+            )}
           </View>
 
           <Text className="text-white text-xl font-light mb-1 text-center tracking-widest uppercase">

@@ -1,3 +1,4 @@
+import { ImageSourcePropType } from "react-native";
 import { ItemEnum } from "../enums/item.enum";
 
 export const ITEM_MAX_LEVEL = 10;
@@ -7,8 +8,7 @@ export interface Item {
   id: ItemEnum;
   name: string;
   description: string;
-  // todo: replace with real artwork; emoji is a stand-in
-  emoji: string;
+  image: ImageSourcePropType;
   // Origin Points cost for the level 0 → 1 upgrade. Subsequent levels scale geometrically.
   baseCost: number;
 }

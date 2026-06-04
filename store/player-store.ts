@@ -34,7 +34,7 @@ interface PlayerStore extends Player {
 }
 
 const INITIAL_LIFE: Life = {
-  realmIndex: 0,
+  realmIndex: 3,
   stageIndex: 0,
   qi: 0,
   currentAge: 0,
@@ -46,7 +46,7 @@ const INITIAL_LIFE: Life = {
 };
 
 export const usePlayerStore = create<PlayerStore>((set, get) => ({
-  spiritualRootIndex: 3,
+  spiritualRootIndex: 4,
   vitalityLevel: 0,
   originPoints: 100,
   lives: [],
@@ -59,7 +59,10 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
   addQi: (amount: number) =>
     set((state) => ({
-      currentLife: { ...state.currentLife, qi: Math.round(state.currentLife.qi + amount) },
+      currentLife: {
+        ...state.currentLife,
+        qi: Math.round(state.currentLife.qi + amount),
+      },
       totalTaps: state.totalTaps + 1,
     })),
 

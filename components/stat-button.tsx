@@ -1,4 +1,5 @@
-import { Pressable } from "react-native";
+// StatButton.tsx
+import { Pressable, View } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { ComponentProps } from "react";
 
@@ -12,10 +13,13 @@ interface Props {
 const StatButton = ({ icon, color, onPress }: Props) => (
   <Pressable
     onPress={onPress}
-    className="w-12 h-12 rounded-full items-center justify-center bg-white/5 border active:bg-white/10"
-    style={{ borderColor: `${color}66` }}
+    // Updated: More defined shape and distinct, bright coloring
+    className="w-14 h-14 rounded-full items-center justify-center bg-black/40 border-2 active:bg-black/60 shadow-lg"
+    style={{ borderColor: color }} // Solid color border
   >
-    <FontAwesome5 name={icon} size={20} color={color} solid />
+    {/* Inner circle accent */}
+    <View className="absolute inset-0 rounded-full bg-white/5 opacity-80" />
+    <FontAwesome5 name={icon} size={24} color={color} solid />
   </Pressable>
 );
 

@@ -1,4 +1,11 @@
-import { View, Text, Pressable, Modal } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  Modal,
+  Image,
+  ImageBackground,
+} from "react-native";
 import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -18,6 +25,8 @@ import ContinuationModal from "../components/continuation-modal";
 import ItemModal from "../components/item-modal";
 import StatButton from "../components/stat-button";
 import { ComponentProps } from "react";
+import homeBackground from "../assets/home-background.png";
+import playerImage from "../assets/player.png";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -75,7 +84,7 @@ export default function HomeScreen() {
     statButtons.push({
       icon: "tint",
       label: "injuries",
-      color: "#ef4444",
+      color: "#f87171",
       onPress: () => setIsInjuriesVisible(true),
     });
   }
@@ -88,119 +97,170 @@ export default function HomeScreen() {
           currentAge: state.currentLife.currentAge + 1,
         },
       }));
-    }, 1000);
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
     const unsub = usePlayerStore.subscribe((state) => {
       if (state.currentLife.currentAge >= state.currentLife.maxAge) {
-        setTimeout(() => router.replace(Route.DEAD), 200);
+        requestAnimationFrame(() => {
+          try {
+            router.replace(Route.DEAD);
+          } catch (e) {
+            console.warn("Navigation context deferred safely:", e);
+          }
+        });
       }
     });
     return () => unsub();
-  }, []);
+  }, [router]);
 
   return (
     <Pressable
       className="flex-1 bg-[#0d0d0f]"
       onPress={() => addQi(qiMultiplier)}
     >
-      {/* Background Ambient Glow */}
-      <View className="absolute top-0 w-full h-64 bg-purple-900/10 blur-3xl" />
+      <ImageBackground
+        source={homeBackground}
+        resizeMode="cover"
+        style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+      />
+      <View className="absolute top-0 left-0 right-0 bottom-0 bg-black/55" />
 
-      <SafeAreaView className="flex-1 px-8">
+      <SafeAreaView className="flex-1 px-6">
         {/* Header: Vitality & Prowess */}
         <View className="flex-row justify-between items-center mt-4">
-          <View>
-            <Text className="text-gray-500 uppercase tracking-[2px] text-[10px] font-bold">
-              Life Span
-            </Text>
-            <Text className="text-white text-xl font-light">
-              {currentAge}{" "}
-              <Text className="text-gray-600 text-sm">
-                / {Math.ceil(maxAge)}
+          {/* POPPING LIFE SPAN PANEL */}
+          <View className="bg-black/75 border-2 border-amber-500/40 rounded-2xl px-4 py-2.5 flex-row items-center shadow-xl">
+            <View className="mr-3 bg-amber-500/10 p-2 rounded-xl border border-amber-500/20">
+              <FontAwesome5 name="hourglass-half" size={16} color="#fbbf24" />
+            </View>
+            <View>
+              <Text className="text-amber-400 uppercase tracking-[2px] text-[10px] font-black">
+                Life Span
               </Text>
-            </Text>
+              <Text className="text-white text-2xl font-black mt-0.5 font-mono tracking-tight">
+                {currentAge}
+                <Text className="text-gray-400 text-sm font-bold font-sans">
+                  {" "}
+                  / {Math.ceil(maxAge)} yrs
+                </Text>
+              </Text>
+            </View>
           </View>
 
-          <View className="flex-row items-center gap-x-5">
+          <View className="flex-row items-center gap-x-3">
             {statButtons.map((b) => (
               <StatButton key={b.label} {...b} />
             ))}
           </View>
         </View>
 
-        {/* Realm Information */}
-        <View className="items-center mt-10 mb-8">
+        {/* Realm Information Header Panel */}
+        <View className="items-center mt-6 mb-4 bg-black/40 border border-white/10 rounded-2xl p-4 shadow-2xl">
           {highestTitle && (
-            <View className="mb-3 px-3 py-1 border border-cyan-500/30 rounded-sm bg-cyan-500/5">
-              <Text className="text-cyan-400 text-[10px] tracking-[5px] font-black uppercase text-center">
+            <View className="mb-2 px-3 py-1 border border-cyan-500/40 rounded-md bg-cyan-950/50">
+              <Text className="text-cyan-400 text-[10px] tracking-[4px] font-black uppercase text-center">
                 {highestTitle}
               </Text>
             </View>
           )}
-          <Text className="text-white text-3xl font-light tracking-tight">
+          <Text
+            className="text-white text-3xl font-extrabold tracking-wide text-center"
+            style={{
+              textShadowColor: "rgba(0, 0, 0, 0.75)",
+              textShadowOffset: { width: 0, height: 2 },
+              textShadowRadius: 4,
+            }}
+          >
             {realms[realmIndex].name}
           </Text>
-          <Text className="text-gray-500 text-base italic">
+          <Text className="text-purple-300 text-sm font-semibold tracking-widest uppercase mt-1">
             {realms[realmIndex].stages[stageIndex].name}
           </Text>
         </View>
 
-        {/* Unlocked Items — todo: replace emoji with real artwork */}
+        {/* Unlocked Items Inventory Bar — layout footprint stays small,
+            images overflow visually so they can be much larger without
+            pushing the player down */}
         {unlockedItems.length > 0 && (
-          <View className="flex-row gap-x-6 justify-center mb-6">
-            {unlockedItems.map((item: ItemEnum) => (
-              <Pressable key={item} onPress={() => setSelectedItem(item)}>
-                <Text style={{ fontSize: 48 }}>
-                  {items.find((i) => i.id === item)?.emoji ?? ""}
-                </Text>
-              </Pressable>
-            ))}
+          <View
+            className="flex-row gap-x-4 justify-center items-center mb-2 bg-white/[0.03] border border-white/5 rounded-xl py-2 px-4"
+            style={{ height: 56, overflow: "visible" }}
+          >
+            {unlockedItems.map((item: ItemEnum) => {
+              const def = items.find((i) => i.id === item);
+              if (!def) return null;
+              const HIT = 56;
+              const IMG = 240;
+              const OFFSET = (HIT - IMG) / 2;
+              return (
+                <Pressable
+                  key={item}
+                  onPress={() => setSelectedItem(item)}
+                  style={{ width: HIT, height: HIT, overflow: "visible" }}
+                >
+                  <Image
+                    source={def.image}
+                    resizeMode="contain"
+                    style={{
+                      width: IMG,
+                      height: IMG,
+                      position: "absolute",
+                      top: OFFSET,
+                      left: OFFSET,
+                    }}
+                  />
+                </Pressable>
+              );
+            })}
           </View>
         )}
 
-        {/* Player Card Placeholder */}
-        <View className="flex-1 items-center justify-center">
-          <View className="w-4/5 aspect-[3/4] rounded-[40px] bg-gray-800/40 border border-white/10 overflow-hidden shadow-2xl">
-            {/* This represents where your image will eventually go */}
-            <View className="flex-1 items-center justify-center">
-              <Text className="text-white/5 text-8xl font-black italic">
-                IMAGE
+        {/* Player Character Container */}
+        <View className="flex-1 items-center justify-center overflow-visible my-2">
+          <Image
+            source={playerImage}
+            resizeMode="contain"
+            style={{
+              width: "85%",
+              height: "85%",
+              transform: [{ scale: 1.8 }],
+            }}
+          />
+        </View>
+
+        {/* Qi Essence + Unified Progress Card */}
+        <View className="mb-28 bg-black/60 border border-white/10 rounded-2xl p-4 shadow-2xl">
+          <View className="flex-row justify-between items-center mb-2.5">
+            <View className="flex-row items-center gap-x-1.5">
+              <View className="w-2 h-2 rounded-full bg-purple-400" />
+              <Text className="text-purple-200 text-xs font-black uppercase tracking-widest">
+                Qi Essence
               </Text>
             </View>
-
-            {/* Bottom Overlay Info */}
-            <View className="absolute bottom-0 w-full bg-black/60 pt-6 pb-8 px-6 border-t border-white/5">
-              <View className="flex-row justify-between items-end mb-3">
-                <Text className="text-purple-200 text-xs font-bold uppercase tracking-widest">
-                  Qi Essence
-                </Text>
-                <Text className="text-white font-mono text-xs">
-                  {formatNumbers(qi)} <Text className="text-gray-500">/</Text>{" "}
-                  {formatNumbers(requiredQi)}
-                </Text>
-              </View>
-
-              {/* Progress Bar */}
-              <View className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-                <View
-                  className="h-full bg-purple-500 shadow-lg shadow-purple-500/50"
-                  style={{ width: `${qiProgress * 100}%` }}
-                />
-              </View>
-            </View>
+            <Text className="text-white font-mono text-xs font-bold">
+              {formatNumbers(qi)}{" "}
+              <Text className="text-gray-500 font-normal">/</Text>{" "}
+              {formatNumbers(requiredQi)}
+            </Text>
+          </View>
+          <View className="w-full h-3 bg-white/10 rounded-full overflow-hidden border border-white/5">
+            <View
+              className="h-full bg-purple-500 rounded-full"
+              style={{ width: `${qiProgress * 100}%` }}
+            />
           </View>
         </View>
 
-        {/* Breakthrough Action */}
+        {/* Breakthrough Action Bottom Bar */}
         <View
           style={{
             position: "absolute",
-            bottom: 40,
-            left: 32,
-            right: 32,
+            bottom: 34,
+            left: 24,
+            right: 24,
           }}
         >
           <Pressable
@@ -217,103 +277,99 @@ export default function HomeScreen() {
             }}
             style={{
               display: canBreakthrough ? "flex" : "none",
-              paddingVertical: 20,
+              paddingVertical: 18,
               borderRadius: 16,
               alignItems: "center",
+              justifyContent: "center",
               borderWidth: 1,
               backgroundColor: canBreakthrough
-                ? "#eab308"
-                : "rgba(255,255,255,0.05)",
+                ? "#fbbf24"
+                : "rgba(255,255,255,0.03)",
               borderColor: canBreakthrough
                 ? "#fde047"
-                : "rgba(255,255,255,0.1)",
+                : "rgba(255,255,255,0.08)",
+              shadowColor: "#fbbf24",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: canBreakthrough ? 0.3 : 0,
+              shadowRadius: 12,
+              elevation: canBreakthrough ? 8 : 0,
             }}
           >
             <Text
               style={{
                 fontWeight: "900",
-                fontSize: 12,
-                letterSpacing: 3,
-                color: canBreakthrough ? "#000" : "#374151",
+                fontSize: 14,
+                letterSpacing: 4,
+                textTransform: "uppercase",
+                color: canBreakthrough ? "#0d0d0f" : "#4b5563",
               }}
             >
-              {canBreakthrough ? "Breakthrough" : "Cultivate"}
+              {canBreakthrough ? "Breakthrough Realm" : "Accumulate Qi"}
             </Text>
           </Pressable>
         </View>
       </SafeAreaView>
 
-      {/* Modal - Kept minimal and consistent */}
+      {/* Stats / Multipliers Modal */}
       <Modal
         animationType="fade"
         transparent
         visible={isStatsVisible}
         onRequestClose={() => setIsStatsVisible(false)}
       >
-        <View className="flex-1 justify-center bg-black/90 px-10">
-          <View className="bg-[#1a1a1e] border border-white/10 rounded-[32px] p-8">
-            <Text className="text-white text-xl font-light mb-8 text-center tracking-widest uppercase">
-              Qi Multiplier
+        <View className="flex-1 justify-center items-center bg-black/80 px-6">
+          <View className="w-full bg-[#131316] border border-white/10 rounded-3xl p-6 shadow-2xl">
+            <Text className="text-white text-lg font-bold mb-6 text-center tracking-widest uppercase">
+              🔮 Qi Multiplier
             </Text>
 
-            <View className="gap-y-4 mb-10">
-              <View className="flex-row justify-between border-b border-white/5 pb-2">
-                <Text className="text-gray-500">Base</Text>
-                <Text className="text-green-400 font-mono">
+            <View className="gap-y-3.5 mb-8">
+              <View className="flex-row justify-between items-center border-b border-white/5 pb-2.5">
+                <Text className="text-gray-400 text-sm">Base</Text>
+                <Text className="text-green-400 font-mono font-bold">
                   + {BASE_MULTIPLIER}
                 </Text>
               </View>
 
-              <View className="flex-row justify-between border-b border-white/5 pb-2">
-                <Text className="text-gray-500">Cultivation</Text>
-                <Text className="text-green-400 font-mono">
-                  * {CULTIVATION_MULTIPLIER.toFixed(0)}
+              <View className="flex-row justify-between items-center border-b border-white/5 pb-2.5">
+                <Text className="text-gray-400 text-sm">Cultivation Realm</Text>
+                <Text className="text-green-400 font-mono font-bold">
+                  × {CULTIVATION_MULTIPLIER.toFixed(0)}
                 </Text>
               </View>
 
-              <View className="flex-row justify-between border-b border-white/5 pb-2">
-                <Text className="text-gray-500">Spiritual Root</Text>
-                <Text className="text-green-400 font-mono">
-                  * {SPIRITUAL_ROOT_MULTIPLIER}
+              <View className="flex-row justify-between items-center border-b border-white/5 pb-2.5">
+                <Text className="text-gray-400 text-sm">Spiritual Root</Text>
+                <Text className="text-green-400 font-mono font-bold">
+                  × {SPIRITUAL_ROOT_MULTIPLIER}
                 </Text>
               </View>
 
               {INJURY_MULTIPLIER < 1 && (
-                <View className="flex-row justify-between border-b border-white/5 pb-2">
-                  <Text className="text-gray-500">Injuries</Text>
-                  <Text className="text-red-400 font-mono">
-                    * {INJURY_MULTIPLIER.toFixed(2)}
+                <View className="flex-row justify-between items-center border-b border-white/5 pb-2.5">
+                  <Text className="text-red-400 text-sm">Active Injuries</Text>
+                  <Text className="text-red-400 font-mono font-bold">
+                    × {INJURY_MULTIPLIER.toFixed(2)}
                   </Text>
                 </View>
               )}
 
               {pendantLevel > 0 && (
-                <View className="flex-row justify-between border-b border-white/5 pb-2">
-                  <Text className="text-gray-500">
+                <View className="flex-row justify-between items-center border-b border-white/5 pb-2.5">
+                  <Text className="text-amber-300 text-sm">
                     Pendant (Lv {pendantLevel})
                   </Text>
-                  <Text className="text-amber-400 font-mono">
-                    * {PENDANT_MULTIPLIER.toFixed(2)}
+                  <Text className="text-amber-400 font-mono font-bold">
+                    × {PENDANT_MULTIPLIER.toFixed(2)}
                   </Text>
                 </View>
               )}
 
-              {/* TODO: cultivation titles */}
-              {/* {titles.map((t, i) => (
-                <View
-                  key={i}
-                  className="flex-row justify-between border-b border-white/5 pb-2"
-                >
-                  <Text className="text-gray-500">{t.name}</Text>
-                  <Text className="text-cyan-400 font-mono">
-                    x{t.multiplier}
-                  </Text>
-                </View>
-              ))} */}
-
-              <View className="flex-row justify-between pt-2">
-                <Text className="text-white font-bold">Multiplier</Text>
-                <Text className="text-purple-400 text-xl font-bold">
+              <View className="flex-row justify-between items-center pt-3">
+                <Text className="text-white font-black text-base">
+                  Total Multiplier
+                </Text>
+                <Text className="text-purple-400 text-2xl font-black font-mono">
                   {qiMultiplier.toFixed(0)}x
                 </Text>
               </View>
@@ -321,10 +377,10 @@ export default function HomeScreen() {
 
             <Pressable
               onPress={() => setIsStatsVisible(false)}
-              className="bg-white py-4 rounded-xl items-center"
+              className="bg-white/10 border border-white/10 py-3.5 rounded-xl items-center"
             >
-              <Text className="text-black font-bold uppercase tracking-widest text-xs">
-                Close
+              <Text className="text-white font-bold uppercase tracking-widest text-xs">
+                Dismiss
               </Text>
             </Pressable>
           </View>
@@ -338,25 +394,29 @@ export default function HomeScreen() {
         visible={isInjuriesVisible}
         onRequestClose={() => setIsInjuriesVisible(false)}
       >
-        <View className="flex-1 justify-center bg-black/90 px-10">
-          <View className="bg-[#1a1a1e] border border-white/10 rounded-[32px] p-8">
-            <Text className="text-white text-xl font-light mb-8 text-center tracking-widest uppercase">
-              Injuries
+        <View className="flex-1 justify-center items-center bg-black/80 px-6">
+          <View className="w-full bg-[#131316] border border-white/10 rounded-3xl p-6 shadow-2xl">
+            <Text className="text-red-400 text-lg font-bold mb-6 text-center tracking-widest uppercase">
+              🩸 Dao Injuries
             </Text>
 
-            <View className="gap-y-4 mb-10">
+            <View className="gap-y-3.5 mb-8">
               {injuries.map((type, i) => (
                 <View
                   key={`n-${i}`}
-                  className="flex-row justify-between items-center border-b border-white/5 pb-2"
+                  className="flex-row justify-between items-center border-b border-white/5 pb-2.5"
                 >
                   <View className="flex-row items-center">
-                    <FontAwesome5 name="tint" size={12} color="#ef4444" solid />
-                    <Text className="text-red-400 ml-3">Normal Injury</Text>
+                    <FontAwesome5 name="tint" size={12} color="#f87171" solid />
+                    <Text className="text-red-400 font-medium ml-2.5 text-sm">
+                      Normal Injury
+                    </Text>
                   </View>
-                  <Text className="text-indigo-400 font-mono">
-                    HP & Qi Multiplier ×{" "}
-                    {(injuryTypes.find((i) => i.id === type)?.qiMultiplier ?? 1).toFixed(2)}
+                  <Text className="text-gray-400 font-mono text-xs">
+                    Qi Production ×{" "}
+                    {(
+                      injuryTypes.find((i) => i.id === type)?.qiMultiplier ?? 1
+                    ).toFixed(2)}
                   </Text>
                 </View>
               ))}
@@ -364,14 +424,19 @@ export default function HomeScreen() {
               {eternalInjuries.map((type, i) => (
                 <View
                   key={`e-${i}`}
-                  className="flex-row justify-between items-center border-b border-white/5 pb-2"
+                  className="flex-row justify-between items-center border-b border-white/5 pb-2.5"
                 >
                   <View className="flex-row items-center">
                     <FontAwesome5 name="tint" size={12} color="#b91c1c" solid />
-                    <Text className="text-red-500 ml-3">Eternal Injury</Text>
+                    <Text className="text-red-600 font-black ml-2.5 text-sm">
+                      Eternal Fracture
+                    </Text>
                   </View>
-                  <Text className="text-red-500 font-mono">
-                    × {(injuryTypes.find((i) => i.id === type)?.qiMultiplier ?? 1).toFixed(2)}
+                  <Text className="text-red-500 font-mono text-xs font-bold">
+                    ×{" "}
+                    {(
+                      injuryTypes.find((i) => i.id === type)?.qiMultiplier ?? 1
+                    ).toFixed(2)}
                   </Text>
                 </View>
               ))}
@@ -379,10 +444,10 @@ export default function HomeScreen() {
 
             <Pressable
               onPress={() => setIsInjuriesVisible(false)}
-              className="bg-white py-4 rounded-xl items-center"
+              className="bg-red-950/40 border border-red-500/20 py-3.5 rounded-xl items-center"
             >
-              <Text className="text-black font-bold uppercase tracking-widest text-xs">
-                Close
+              <Text className="text-red-400 font-bold uppercase tracking-widest text-xs">
+                Close Logs
               </Text>
             </Pressable>
           </View>
@@ -396,13 +461,13 @@ export default function HomeScreen() {
         visible={isAchievementsVisible}
         onRequestClose={() => setIsAchievementsVisible(false)}
       >
-        <View className="flex-1 justify-center bg-black/90 px-10">
-          <View className="bg-[#1a1a1e] border border-white/10 rounded-[32px] p-8">
-            <Text className="text-white text-xl font-light mb-8 text-center tracking-widest uppercase">
-              Achievements
+        <View className="flex-1 justify-center items-center bg-black/80 px-6">
+          <View className="w-full bg-[#131316] border border-white/10 rounded-3xl p-5 shadow-2xl">
+            <Text className="text-white text-lg font-bold mb-5 text-center tracking-widest uppercase">
+              🏆 Karma Records
             </Text>
 
-            <View className="gap-y-3 mb-8">
+            <View className="gap-y-3 mb-6">
               {achievements.map((def) => {
                 const id = def.id;
                 const progress = def.getProgress({
@@ -426,36 +491,34 @@ export default function HomeScreen() {
                 return (
                   <View
                     key={id}
-                    className="rounded-2xl bg-white/[0.03] border border-white/10 p-3 flex-row items-center"
+                    className="rounded-xl bg-white/[0.02] border border-white/5 p-3 flex-row items-center"
                   >
-                    {/* Icon badge */}
                     <View
-                      className={`w-14 h-14 rounded-xl items-center justify-center mr-3 border ${
+                      className={`w-12 h-12 rounded-xl items-center justify-center mr-3 border ${
                         done
-                          ? "bg-amber-400/15 border-amber-400/40"
+                          ? "bg-amber-400/10 border-amber-400/30"
                           : "bg-white/5 border-white/10"
                       }`}
                     >
                       <FontAwesome5
                         name={def.icon}
-                        size={22}
-                        color={done ? "#fbbf24" : "#6b7280"}
+                        size={18}
+                        color={done ? "#fbbf24" : "#4b5563"}
                         solid
                       />
                     </View>
 
-                    {/* Title, description, progress */}
-                    <View className="flex-1 mr-3">
-                      <Text className="text-white text-xs font-black uppercase tracking-widest">
+                    <View className="flex-1 mr-2">
+                      <Text className="text-white text-xs font-bold uppercase tracking-wider">
                         {def.name}
                       </Text>
-                      <Text className="text-gray-500 text-[11px] italic mt-0.5">
+                      <Text className="text-gray-400 text-[11px] italic mt-0.5">
                         {def.description}
                       </Text>
 
                       {isNumeric && (
                         <View className="mt-2">
-                          <View className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                          <View className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
                             <View
                               className={`h-full rounded-full ${
                                 done ? "bg-amber-400" : "bg-purple-500"
@@ -463,35 +526,39 @@ export default function HomeScreen() {
                               style={{ width: `${progressFraction * 100}%` }}
                             />
                           </View>
-                          <Text className="text-gray-400 font-mono text-[10px] mt-1">
+                          <Text className="text-gray-500 font-mono text-[9px] mt-1">
                             {progress.current} / {progress.target}
                           </Text>
                         </View>
                       )}
                     </View>
 
-                    {/* Reward + claim column */}
-                    <View className="items-end" style={{ minWidth: 80 }}>
-                      <View className="flex-row items-center mb-2">
+                    <View
+                      className="items-end justify-center"
+                      style={{ minWidth: 74 }}
+                    >
+                      <View className="flex-row items-center mb-1.5">
                         <FontAwesome5
                           name="gem"
-                          size={9}
+                          size={8}
                           color="#fbbf24"
                           solid
                         />
-                        <Text className="text-amber-400 text-[11px] font-bold ml-1">
+                        <Text className="text-amber-400 font-mono text-[10px] font-bold ml-1">
                           +{def.originPointsReward}
                         </Text>
                         {rewardItem && (
-                          <Text className="ml-2" style={{ fontSize: 14 }}>
-                            {rewardItem.emoji}
-                          </Text>
+                          <Image
+                            source={rewardItem.image}
+                            resizeMode="contain"
+                            style={{ width: 16, height: 16, marginLeft: 6 }}
+                          />
                         )}
                       </View>
 
                       {done && claimed && (
-                        <View className="bg-white/5 px-3 py-1 rounded-full">
-                          <Text className="text-gray-500 text-[9px] font-bold uppercase tracking-widest">
+                        <View className="bg-white/5 px-2 py-0.5 rounded-md border border-white/5">
+                          <Text className="text-gray-500 text-[8px] font-bold uppercase tracking-wider">
                             Claimed
                           </Text>
                         </View>
@@ -499,9 +566,9 @@ export default function HomeScreen() {
                       {done && !claimed && (
                         <Pressable
                           onPress={() => claimAchievement(id)}
-                          className="bg-amber-400 px-4 py-1.5 rounded-full"
+                          className="bg-amber-400 px-3 py-1 rounded-md"
                         >
-                          <Text className="text-black text-[10px] font-black uppercase tracking-widest">
+                          <Text className="text-black text-[9px] font-black uppercase tracking-wider">
                             Claim
                           </Text>
                         </Pressable>
@@ -514,10 +581,10 @@ export default function HomeScreen() {
 
             <Pressable
               onPress={() => setIsAchievementsVisible(false)}
-              className="bg-white py-4 rounded-xl items-center"
+              className="bg-white/10 border border-white/5 py-3.5 rounded-xl items-center"
             >
-              <Text className="text-black font-bold uppercase tracking-widest text-xs">
-                Close
+              <Text className="text-white font-bold uppercase tracking-widest text-xs">
+                Back to Temple
               </Text>
             </Pressable>
           </View>
@@ -537,7 +604,8 @@ export default function HomeScreen() {
               {realms[realmIndex + 1]?.name ?? "next"}
             </Text>{" "}
             realm is an unforgivable offense against the high heavens. The skies
-            have already gathered to grind such ambition back to dust. Ascend regardless?
+            have already gathered to grind such ambition back to dust. Ascend
+            regardless?
           </>
         }
         buttonLabel="Begin"

@@ -1,5 +1,5 @@
 // ─── Lightning ──────────────────────────────────────────────────────────────
-export const BASE_STRIKE_INTERVAL_MS = 800; // Time between lightning strikes at realm 0. Scales down per realm.
+export const BASE_STRIKE_INTERVAL_MS = 2000; // Time between lightning strikes at realm 0. Scales down per realm.
 export const BASE_BURST_DAMAGE = 2; // Instant HP damage dealt by a single lightning strike at realm 0.
 export const BASE_CHARGE_PER_STRIKE = 5; // Aura charge added to the player on each strike at realm 0.
 export const BASE_TAP_RELIEF = 5; // Charge removed from the aura per tap on the player at realm 0.
