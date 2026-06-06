@@ -12,70 +12,78 @@ interface Props {
 const UpgradeCard = ({ upgrade, canAfford, onPress, onInfoPress }: Props) => {
   return (
     <View
-      className={`w-full rounded-[40px] border-2 ${
+      className={`w-full border-2 rounded-2xl ${
         canAfford
-          ? "bg-slate-800 border-purple-500/20"
-          : "bg-slate-900 border-slate-800 opacity-95"
+          ? "bg-black/70 border-amber-500/40 shadow-xl"
+          : "bg-black/50 border-white/10 opacity-70"
       }`}
     >
-      <View className="px-6 py-5">
+      <View className="px-4 py-4">
         <View className="flex-row items-center justify-between">
-          {/* Left: tappable info area */}
+          {/* Left Side: Glowing Talisman Badge and Details */}
           <Pressable
             onPress={onInfoPress}
-            className="flex-row items-center flex-1 pr-4"
+            className="flex-row items-center flex-1 pr-3"
           >
+            {/* Square 1:1 Icon Badge */}
             <View
-              className={`w-14 h-14 items-center justify-center rounded-2xl ${
-                canAfford ? "bg-purple-500/10" : "bg-slate-950"
+              className={`w-12 h-12 items-center justify-center border rounded-xl ${
+                canAfford
+                  ? "bg-amber-500/15 border-amber-500/40"
+                  : "bg-white/5 border-white/10"
               }`}
             >
               <FontAwesome5
                 name={upgrade.icon}
-                size={22}
-                color={canAfford ? "#C084FC" : "#475569"}
+                size={18}
+                color={canAfford ? "#fbbf24" : "#6b7280"}
                 solid
               />
             </View>
-            <View className="ml-4 flex-shrink">
+
+            {/* Upgrade Titles */}
+            <View className="ml-3 flex-shrink">
               <Text
-                className={`text-lg font-black tracking-tight leading-5 ${
-                  canAfford ? "text-white" : "text-slate-600"
+                className={`text-md font-bold tracking-wide ${
+                  canAfford ? "text-amber-300" : "text-gray-500"
                 }`}
               >
                 {upgrade.label}
               </Text>
-              <Text className="text-purple-500/60 text-[9px] font-black uppercase tracking-[2px] mt-1">
-                {upgrade.levelLabel ?? `LVL ${upgrade.level}`}
+              <Text className="text-amber-200/50 text-[10px] font-mono font-bold mt-0.5">
+                [{upgrade.levelLabel ?? `STAGE ${upgrade.level}`}]
               </Text>
             </View>
           </Pressable>
 
-          {/* Buy button */}
+          {/* Right Side: Buy Button */}
           <Pressable
             onPress={onPress}
             disabled={!canAfford || upgrade.isMaxed}
-            className={`px-5 py-3 rounded-2xl items-center justify-center ${
+            className={`px-4 py-2 border rounded-xl ${
               canAfford && !upgrade.isMaxed
-                ? "bg-purple-600"
-                : "bg-slate-950 border border-slate-800"
+                ? "bg-amber-600 border-amber-300/50 active:bg-amber-700"
+                : "bg-white/5 border-white/10"
             }`}
+            style={
+              canAfford && !upgrade.isMaxed ? { borderBottomWidth: 4 } : {}
+            }
           >
             {upgrade.isMaxed ? (
-              <Text className="text-slate-500 text-sm font-black tracking-widest">
-                MAX
+              <Text className="text-gray-500 text-xs font-bold tracking-widest">
+                MAXED
               </Text>
             ) : (
-              <View className="flex-row items-baseline gap-1">
+              <View className="flex-row items-center gap-x-1">
                 <Text
-                  className={`text-lg font-black ${canAfford ? "text-white" : "text-slate-700"}`}
+                  className={`text-sm font-bold font-mono ${canAfford ? "text-white" : "text-gray-500"}`}
                 >
                   {upgrade.cost}
                 </Text>
                 <Text
-                  className={`text-[10px] font-bold ${canAfford ? "text-purple-200" : "text-slate-800"}`}
+                  className={`text-[9px] font-bold ${canAfford ? "text-amber-200" : "text-gray-500"}`}
                 >
-                  PTS
+                  QI
                 </Text>
               </View>
             )}

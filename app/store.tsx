@@ -1,6 +1,13 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  ImageBackground,
+} from "react-native";
 import { usePlayerStore } from "../store/player-store";
+import homeBackground from "../assets/home-background.png";
 import UpgradeCard from "../components/upgrade-card";
 import UpgradeModal from "../components/upgrade-modal";
 import { Upgrade, UPGRADE_TYPES } from "../interfaces/store-upgrade.interface";
@@ -46,28 +53,27 @@ export default function SystemStore() {
 
   const spiritualRoot: Upgrade = {
     type: UPGRADE_TYPES.SPIRITUAL_ROOT,
-    label: `${roots[spiritualRootIndex].rank} Spiritual Root`,
-    icon: "seedling",
+    label: `${roots[spiritualRootIndex].rank} Root`,
+    icon: "leaf",
     cost: getUpgradeCost(UPGRADE_TYPES.SPIRITUAL_ROOT),
     level: spiritualRootIndex + 1,
     maxLevel: roots.length - 1,
     isMaxed: spiritualRootIndex >= roots.length - 1,
     desc: roots[spiritualRootIndex].description,
-    levelLabel: `${roots[spiritualRootIndex].rank} Spiritual Root`,
+    levelLabel: `${roots[spiritualRootIndex].rank} Grade`,
     nextDesc: roots[spiritualRootIndex + 1]?.description || "MAX",
     nextLabel: roots[spiritualRootIndex + 1]?.rank || "MAX",
   };
 
   const vitality: Upgrade = {
     type: UPGRADE_TYPES.VITALITY,
-    label: "Vitality",
-    icon: "tint",
+    label: "Physical Qi",
+    icon: "heart",
     cost: getUpgradeCost(UPGRADE_TYPES.VITALITY),
     level: vitalityLevel + 1,
     isMaxed: false,
-    // Using simple additive display logic for UI clarity
-    desc: `Current Bonus: +${vitalityLevel * 20}% Lifespan`,
-    nextDesc: `Upgrade to: +${(vitalityLevel + 1) * 20}% Lifespan`,
+    desc: `Current Essence: +${vitalityLevel * 20}% Lifespan`,
+    nextDesc: `Breakthrough to: +${(vitalityLevel + 1) * 20}% Lifespan`,
     nextLabel: undefined,
   };
 
@@ -77,11 +83,11 @@ export default function SystemStore() {
     const count = eternalInjuries.length;
     upgrades.push({
       type: UPGRADE_TYPES.CLEANSE_ETERNAL_INJURIES,
-      label: "Cleanse Eternal Injuries",
-      icon: "pray",
+      label: "Wash Karma (Injuries)",
+      icon: "yin-yang",
       cost: getUpgradeCost(UPGRADE_TYPES.CLEANSE_ETERNAL_INJURIES),
       level: count,
-      levelLabel: `${count} INJUR${count === 1 ? "Y" : "IES"}`,
+      levelLabel: `${count} Tribulation Scar${count === 1 ? "" : "s"}`,
       isMaxed: false,
       desc: `Purge every eternal injury carried. Stat reductions are restored on the next life.`,
       nextDesc: undefined,
@@ -90,40 +96,51 @@ export default function SystemStore() {
   }
 
   return (
-    <View className="flex-1 bg-slate-950">
+    <View className="flex-1 bg-[#0d0d0f]">
+      <ImageBackground
+        source={homeBackground}
+        resizeMode="cover"
+        blurRadius={6}
+        style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+      />
+      <View className="absolute top-0 left-0 right-0 bottom-0 bg-black/65" />
+
       <ScrollView
         className="flex-1 w-full"
         contentContainerStyle={{
           paddingHorizontal: 16,
           paddingVertical: 24,
-          paddingBottom: 120,
+          paddingBottom: 140,
         }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header with Currency Display */}
-        <View className="flex-row justify-between items-end mb-8">
+        {/* Cultivation Pavilion Header */}
+        <View className="flex-row justify-between items-center mb-8 border-2 border-amber-500/40 pb-4 bg-black/70 p-4 rounded-2xl shadow-xl">
           <View>
-            <Text className="text-white text-3xl font-black tracking-tight italic">
-              SYSTEM STORE
+            <Text className="text-amber-400 text-2xl font-black tracking-wide">
+              TREASURY PAVILION
             </Text>
-            <View className="h-1 w-12 bg-purple-500 rounded-full mt-1" />
+            <Text className="text-amber-200/70 text-xs font-mono tracking-tight mt-0.5">
+              Exchange Karma & Destiny
+            </Text>
           </View>
 
-          <View className="items-end bg-purple-900/30 px-4 py-2 rounded-2xl border border-purple-500/20">
-            <Text className="text-purple-300 text-xs font-bold uppercase tracking-widest">
-              Origin Points
+          {/* Cultivation Currency Interface */}
+          <View className="items-end bg-amber-500/10 px-3 py-2 border border-amber-500/30 rounded-xl">
+            <Text className="text-amber-400 text-[10px] font-bold tracking-wider uppercase">
+              Store Points
             </Text>
-            <View className="flex-row items-center gap-x-2">
-              <FontAwesome5 name="fist-raised" size={14} color="#a855f7" />
-              <Text className="text-white text-2xl font-black">
+            <View className="flex-row items-center gap-x-1.5">
+              <FontAwesome5 name="gem" size={12} color="#fbbf24" />
+              <Text className="text-white text-xl font-bold font-mono">
                 {originPoints.toLocaleString()}
               </Text>
             </View>
           </View>
         </View>
 
-        {/* Upgrades List */}
-        <View className="w-full gap-y-5">
+        {/* Dynamic Talisman/Upgrade Cards list */}
+        <View className="w-full gap-y-4">
           {upgrades.map((upgrade) => (
             <UpgradeCard
               key={upgrade.label}
@@ -147,17 +164,19 @@ export default function SystemStore() {
         </View>
       </ScrollView>
 
-      {/* Floating Action/Exit Button */}
-      <View className="absolute bottom-10 left-0 right-0 items-center px-6">
+      {/* Reincarnation Wheel Trigger Button */}
+      <View className="absolute bottom-6 left-0 right-0 items-center px-6">
         <TouchableOpacity
-          className="bg-purple-600 w-full py-4 rounded-2xl shadow-lg shadow-purple-500/50 flex-row justify-center items-center gap-x-3"
-          activeOpacity={0.8}
+          className="bg-amber-600 w-full py-4 rounded-2xl border-2 border-amber-300/50 border-b-4 border-b-amber-800 active:border-b-2 active:mt-0.5 flex-row justify-center items-center shadow-xl"
+          activeOpacity={0.9}
           onPress={() => {
             reincarnate();
             router.replace(Route.HOME);
           }}
         >
-          <Text className="text-white font-bold text-lg">Reincarnate</Text>
+          <Text className="text-white font-black text-lg tracking-widest">
+            REINCARNATE
+          </Text>
         </TouchableOpacity>
       </View>
 

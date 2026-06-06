@@ -263,59 +263,27 @@ export default function HomeScreen() {
         </View>
 
         {/* Breakthrough Action Bottom Bar */}
-        <View
-          style={{
-            position: "absolute",
-            bottom: 34,
-            left: 24,
-            right: 24,
-          }}
-        >
-          <Pressable
-            onPress={(e) => {
-              e.stopPropagation();
-              if (!canBreakthrough) return;
-              const next = getNextState(realmIndex, stageIndex);
-              if (!next) return;
-              if (next.currentRealmIndex !== realmIndex) {
-                setIsTribulationConfirmVisible(true);
-              } else {
-                breakthrough();
-              }
-            }}
-            style={{
-              display: canBreakthrough ? "flex" : "none",
-              paddingVertical: 18,
-              borderRadius: 16,
-              alignItems: "center",
-              justifyContent: "center",
-              borderWidth: 1,
-              backgroundColor: canBreakthrough
-                ? "#fbbf24"
-                : "rgba(255,255,255,0.03)",
-              borderColor: canBreakthrough
-                ? "#fde047"
-                : "rgba(255,255,255,0.08)",
-              shadowColor: "#fbbf24",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: canBreakthrough ? 0.3 : 0,
-              shadowRadius: 12,
-              elevation: canBreakthrough ? 8 : 0,
-            }}
-          >
-            <Text
-              style={{
-                fontWeight: "900",
-                fontSize: 14,
-                letterSpacing: 4,
-                textTransform: "uppercase",
-                color: canBreakthrough ? "#0d0d0f" : "#4b5563",
+        {canBreakthrough && (
+          <View className="absolute bottom-9 left-0 right-0 items-center">
+            <Pressable
+              onPress={(e) => {
+                e.stopPropagation();
+                const next = getNextState(realmIndex, stageIndex);
+                if (!next) return;
+                if (next.currentRealmIndex !== realmIndex) {
+                  setIsTribulationConfirmVisible(true);
+                } else {
+                  breakthrough();
+                }
               }}
+              className="flex-row items-center justify-center gap-x-2.5 px-8 py-3.5 rounded-2xl bg-amber-400 border-2 border-amber-200 border-b-[6px] border-b-amber-700 active:border-b-2 active:mt-1 shadow-lg shadow-amber-400/60"
             >
-              {canBreakthrough ? "Breakthrough Realm" : "Accumulate Qi"}
-            </Text>
-          </Pressable>
-        </View>
+              <Text className="text-amber-950 font-black text-sm tracking-[3px] uppercase">
+                Breakthrough Realm
+              </Text>
+            </Pressable>
+          </View>
+        )}
       </SafeAreaView>
 
       {/* Stats / Multipliers Modal */}
