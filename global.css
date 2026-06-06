@@ -1,3 +1,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Shared typography. Each class bakes the structural styling (size, weight,
+   casing, letter-spacing, line-height) that was duplicated across screens.
+   Append a utility to override per use — utilities beat the components layer,
+   so `className="eyebrow text-amber-400"` recolors reliably. */
+@layer components {
+  /* Large centered modal heading */
+  .modal-title {
+    @apply text-white text-xl font-black uppercase tracking-[4px] text-center;
+  }
+
+  /* Small uppercase label / eyebrow shown above a value */
+  .eyebrow {
+    @apply text-gray-400 text-xs font-black uppercase tracking-[2px];
+  }
+
+  /* Readable body / description copy (add `italic` per use where wanted) */
+  .body-text {
+    @apply text-gray-300 text-sm leading-6;
+  }
+
+  /* Uppercase tracked label for buttons */
+  .btn-label {
+    @apply text-white text-sm font-black uppercase tracking-widest;
+  }
+}

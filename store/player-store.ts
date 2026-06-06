@@ -34,7 +34,7 @@ interface PlayerStore extends Player {
 }
 
 const INITIAL_LIFE: Life = {
-  realmIndex: 3,
+  realmIndex: 0,
   stageIndex: 0,
   qi: 0,
   currentAge: 0,

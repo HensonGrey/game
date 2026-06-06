@@ -35,7 +35,7 @@ export default function Dead() {
           <Text className="text-red-600 text-6xl font-black italic tracking-tighter">
             DEAD
           </Text>
-          <Text className="text-slate-600 text-[10px] font-bold uppercase tracking-[8px] mt-2 ml-2">
+          <Text className="text-slate-400 text-xs font-bold uppercase tracking-[5px] mt-2 ml-1">
             Dao Extinguished
           </Text>
         </View>
@@ -48,30 +48,30 @@ export default function Dead() {
             <View className="h-[1px] flex-1 bg-slate-800" />
           </View>
 
-          <Text className="text-slate-500 text-[10px] font-black uppercase tracking-[3px] mb-2">
+          <Text className="text-slate-400 text-xs font-black uppercase tracking-[3px] mb-2">
             Final Age
           </Text>
           <Text className="text-white text-5xl font-black mb-8">
             {currentAge}
           </Text>
 
-          <Text className="text-slate-500 text-[10px] font-black uppercase tracking-[3px] mb-4">
+          <Text className="text-slate-400 text-xs font-black uppercase tracking-[3px] mb-4">
             Highest Attainment
           </Text>
 
           <View className="items-center bg-purple-500/10 border border-purple-500/20 py-4 px-6 rounded-2xl w-full">
-            <Text className="text-purple-400 font-black tracking-widest text-lg uppercase text-center">
+            <Text className="text-purple-300 font-black tracking-widest text-xl uppercase text-center">
               {realms[realmIndex].name}
             </Text>
-            <Text className="text-slate-400 text-xs mt-1 font-medium italic uppercase tracking-tighter">
+            <Text className="text-slate-300 text-sm mt-1.5 font-semibold italic uppercase tracking-wide text-center">
               {realms[realmIndex].stages[stageIndex].name}
             </Text>
           </View>
         </View>
 
         {/* The Quote - Constrained to prevent scuffed layout */}
-        <View className="mt-12 mb-16 px-6">
-          <Text className="text-slate-500 text-center italic text-[11px] leading-5">
+        <View className="mt-12 mb-16 px-4">
+          <Text className="text-slate-300 text-center italic text-sm leading-6">
             The cycle of Karma never ends. The flesh returns to the earth; the
             soul carries the spark of the Dao onward.
           </Text>
@@ -84,8 +84,8 @@ export default function Dead() {
         >
           {({ pressed }) => (
             <Text
-              className={`text-center font-black tracking-[4px] text-xs uppercase ${
-                pressed ? "text-white" : "text-red-500"
+              className={`text-center font-black tracking-[3px] text-sm uppercase ${
+                pressed ? "text-white" : "text-red-400"
               }`}
             >
               Prepare For Reincarnation

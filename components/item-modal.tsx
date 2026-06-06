@@ -72,24 +72,20 @@ const ItemModal = ({ item, onClose }: Props) => {
             )}
           </View>
 
-          <Text className="text-white text-xl font-light mb-1 text-center tracking-widest uppercase">
-            {def?.name ?? ""}
-          </Text>
-          <Text className="text-amber-400 text-[10px] font-black uppercase tracking-widest mb-5">
+          <Text className="modal-title mb-1">{def?.name ?? ""}</Text>
+          <Text className="eyebrow text-amber-400 mb-5">
             Level {level} / {ITEM_MAX_LEVEL}
           </Text>
 
-          <Text className="text-gray-400 text-center text-xs leading-5 italic mb-6">
+          <Text className="body-text text-center italic mb-6">
             {def?.description ?? ""}
           </Text>
 
           {/* Effect strip */}
           {item && (
             <View className="self-stretch bg-white/5 border border-white/10 rounded-xl py-3 px-4 mb-6 flex-row justify-between items-center">
-              <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">
-                Effect
-              </Text>
-              <Text className="text-purple-300 text-xs font-mono">
+              <Text className="eyebrow">Effect</Text>
+              <Text className="text-purple-300 text-sm font-mono font-bold">
                 {getEffectLabel(item, level)}
               </Text>
             </View>
@@ -108,15 +104,11 @@ const ItemModal = ({ item, onClose }: Props) => {
             }`}
           >
             {atMax ? (
-              <Text className="text-gray-500 font-black uppercase tracking-widest text-xs">
-                Maxed
-              </Text>
+              <Text className="btn-label text-gray-500">Maxed</Text>
             ) : (
               <View className="flex-row items-center">
                 <Text
-                  className={`font-black uppercase tracking-widest text-xs ${
-                    canAfford ? "text-black" : "text-gray-500"
-                  }`}
+                  className={`btn-label ${canAfford ? "text-black" : "text-gray-500"}`}
                 >
                   Upgrade —
                 </Text>
@@ -128,9 +120,7 @@ const ItemModal = ({ item, onClose }: Props) => {
                   style={{ marginLeft: 8, marginRight: 4 }}
                 />
                 <Text
-                  className={`font-black uppercase tracking-widest text-xs ${
-                    canAfford ? "text-black" : "text-gray-500"
-                  }`}
+                  className={`btn-label ${canAfford ? "text-black" : "text-gray-500"}`}
                 >
                   {cost} OP
                 </Text>

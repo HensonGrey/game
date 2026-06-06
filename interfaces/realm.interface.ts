@@ -6,4 +6,6 @@ export interface Realm {
   description: string;
   stages: Stage[];
   title?: TitleEnum;
+  /** Aura/glow hue for this realm, shown around the player as cultivation progresses. */
+  color?: string;
 }

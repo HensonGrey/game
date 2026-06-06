@@ -24,6 +24,7 @@ import { items } from "../data/item-data";
 import ContinuationModal from "../components/continuation-modal";
 import ItemModal from "../components/item-modal";
 import StatButton from "../components/stat-button";
+import { QiAura } from "../components/qi-aura";
 import { ComponentProps } from "react";
 import homeBackground from "../assets/home-background.png";
 import playerImage from "../assets/player.png";
@@ -65,6 +66,19 @@ export default function HomeScreen() {
     eternalInjuries,
   } = useCultivation();
   const qiProgress = Math.min(qi / requiredQi, 1);
+  // Aura/progress hue: this realm's color, flipping to gold once a breakthrough is ready.
+  const realmColor = realms[realmIndex].color ?? "#a855f7";
+  const auraColor = canBreakthrough ? "#fbbf24" : realmColor;
+  // Sum of each injury's lifespan hit (rounded per injury) so the per-row values
+  // in the modal add up exactly to this total.
+  const allInjuries = [...injuries, ...eternalInjuries];
+  const lifespanReductionPct = allInjuries.reduce((sum, type) => {
+    const r = injuryTypes.find((it) => it.id === type)?.lifespanReduction ?? 0;
+    return sum + Math.round(r * 100);
+  }, 0);
+  // Qi multipliers stack multiplicatively (INJURY_MULTIPLIER is their product),
+  // so the total reduction is 1 minus that product.
+  const qiReductionPct = Math.round((1 - INJURY_MULTIPLIER) * 100);
 
   const statButtons: ComponentProps<typeof StatButton>[] = [
     {
@@ -97,7 +111,7 @@ export default function HomeScreen() {
           currentAge: state.currentLife.currentAge + 1,
         },
       }));
-    }, 10000);
+    }, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -181,77 +195,71 @@ export default function HomeScreen() {
           </Text>
         </View>
 
-        {/* Unlocked Items Inventory Bar — layout footprint stays small,
-            images overflow visually so they can be much larger without
-            pushing the player down */}
-        {unlockedItems.length > 0 && (
-          <View
-            className="flex-row gap-x-4 justify-center items-center mb-2 bg-white/[0.03] border border-white/5 rounded-xl py-2 px-4"
-            style={{ height: 56, overflow: "visible" }}
-          >
-            {unlockedItems.map((item: ItemEnum) => {
-              const def = items.find((i) => i.id === item);
-              if (!def) return null;
-              const HIT = 56;
-              const IMG = 240;
-              const OFFSET = (HIT - IMG) / 2;
-              return (
-                <Pressable
-                  key={item}
-                  onPress={() => setSelectedItem(item)}
-                  style={{ width: HIT, height: HIT, overflow: "visible" }}
-                >
-                  <Image
-                    source={def.image}
-                    resizeMode="contain"
-                    style={{
-                      width: IMG,
-                      height: IMG,
-                      position: "absolute",
-                      top: OFFSET,
-                      left: OFFSET,
-                    }}
-                  />
-                </Pressable>
-              );
-            })}
-          </View>
-        )}
-
-        {/* Player Character Container */}
+        {/* Player Character Container — unlocked items flank the player
+            (pendant left, sword right); aura glow signifies cultivation progress */}
         <View className="flex-1 items-center justify-center overflow-visible my-2">
-          <Image
+          <QiAura
             source={playerImage}
-            resizeMode="contain"
+            intensity={qiProgress}
+            color={auraColor}
+            breathing
             style={{
               width: "85%",
               height: "85%",
               transform: [{ scale: 1.8 }],
             }}
           />
+
+          {/* Flanking equipped items, vertically centered beside the character */}
+          {([ItemEnum.PENDANT, ItemEnum.SWORD] as const).map((slot) => {
+            if (!unlockedItems.includes(slot)) return null;
+            const def = items.find((i) => i.id === slot);
+            if (!def) return null;
+            const SIZE = 175;
+            const VERTICAL_OFFSET = 70; // nudge items down beside the lower body
+            const SIDE_INSET = -50; // pull outward so the icon clears the player
+            const isLeft = slot === ItemEnum.PENDANT;
+            return (
+              <Pressable
+                key={slot}
+                onPress={() => setSelectedItem(slot)}
+                style={[
+                  {
+                    position: "absolute",
+                    top: "50%",
+                    marginTop: -SIZE / 2 + VERTICAL_OFFSET,
+                    width: SIZE,
+                    height: SIZE,
+                  },
+                  isLeft ? { left: SIDE_INSET } : { right: SIDE_INSET },
+                ]}
+              >
+                <Image
+                  source={def.image}
+                  resizeMode="contain"
+                  style={{ width: SIZE, height: SIZE }}
+                />
+              </Pressable>
+            );
+          })}
         </View>
 
-        {/* Qi Essence + Unified Progress Card */}
-        <View className="mb-28 bg-black/60 border border-white/10 rounded-2xl p-4 shadow-2xl">
-          <View className="flex-row justify-between items-center mb-2.5">
-            <View className="flex-row items-center gap-x-1.5">
-              <View className="w-2 h-2 rounded-full bg-purple-400" />
-              <Text className="text-purple-200 text-xs font-black uppercase tracking-widest">
-                Qi Essence
-              </Text>
-            </View>
-            <Text className="text-white font-mono text-xs font-bold">
-              {formatNumbers(qi)}{" "}
-              <Text className="text-gray-500 font-normal">/</Text>{" "}
-              {formatNumbers(requiredQi)}
+        <View className="mb-28 self-center flex-row items-center gap-x-2.5 bg-black/55 rounded-full px-4 py-2">
+          <View
+            className="w-2 h-2 rounded-full"
+            style={{ backgroundColor: auraColor }}
+          />
+          <Text className="text-gray-300 text-[11px] font-black tracking-[2px]">
+            Qi
+          </Text>
+          {/* Divider to separate the label from the numbers */}
+          <View className="w-px h-3.5 bg-white/20" />
+          <Text className="text-white font-mono text-sm font-black tracking-tight">
+            {formatNumbers(qi)}{" "}
+            <Text className="text-gray-400 font-medium">
+              / {formatNumbers(requiredQi)}
             </Text>
-          </View>
-          <View className="w-full h-3 bg-white/10 rounded-full overflow-hidden border border-white/5">
-            <View
-              className="h-full bg-purple-500 rounded-full"
-              style={{ width: `${qiProgress * 100}%` }}
-            />
-          </View>
+          </Text>
         </View>
 
         {/* Breakthrough Action Bottom Bar */}
@@ -396,51 +404,118 @@ export default function HomeScreen() {
       >
         <View className="flex-1 justify-center items-center bg-black/80 px-6">
           <View className="w-full bg-[#131316] border border-white/10 rounded-3xl p-6 shadow-2xl">
-            <Text className="text-red-400 text-lg font-bold mb-6 text-center tracking-widest uppercase">
+            <Text className="text-red-400 text-xl font-black mb-6 text-center tracking-widest uppercase">
               🩸 Dao Injuries
             </Text>
 
-            <View className="gap-y-3.5 mb-8">
-              {injuries.map((type, i) => (
-                <View
-                  key={`n-${i}`}
-                  className="flex-row justify-between items-center border-b border-white/5 pb-2.5"
-                >
-                  <View className="flex-row items-center">
-                    <FontAwesome5 name="tint" size={12} color="#f87171" solid />
-                    <Text className="text-red-400 font-medium ml-2.5 text-sm">
-                      Normal Injury
-                    </Text>
+            <View className="gap-y-4 mb-6">
+              {injuries.map((type, i) => {
+                const e = injuryTypes.find((it) => it.id === type);
+                return (
+                  <View
+                    key={`n-${i}`}
+                    className="flex-row justify-between items-center border-b border-white/5 pb-3"
+                  >
+                    <View className="flex-row items-center">
+                      <FontAwesome5
+                        name="tint"
+                        size={14}
+                        color="#f87171"
+                        solid
+                      />
+                      <Text className="text-red-400 font-bold ml-2.5 text-base">
+                        Normal Injury
+                      </Text>
+                    </View>
+                    <View className="items-end">
+                      <Text className="text-red-300 font-mono text-sm font-bold">
+                        Lifespan −
+                        {Math.round((e?.lifespanReduction ?? 0) * 100)}%
+                      </Text>
+                      <Text className="text-gray-400 font-mono text-xs mt-1">
+                        Qi ×{(e?.qiMultiplier ?? 1).toFixed(2)}
+                      </Text>
+                    </View>
                   </View>
-                  <Text className="text-gray-400 font-mono text-xs">
-                    Qi Production ×{" "}
-                    {(
-                      injuryTypes.find((i) => i.id === type)?.qiMultiplier ?? 1
-                    ).toFixed(2)}
-                  </Text>
-                </View>
-              ))}
+                );
+              })}
 
-              {eternalInjuries.map((type, i) => (
-                <View
-                  key={`e-${i}`}
-                  className="flex-row justify-between items-center border-b border-white/5 pb-2.5"
-                >
-                  <View className="flex-row items-center">
-                    <FontAwesome5 name="tint" size={12} color="#b91c1c" solid />
-                    <Text className="text-red-600 font-black ml-2.5 text-sm">
-                      Eternal Fracture
-                    </Text>
+              {eternalInjuries.map((type, i) => {
+                const e = injuryTypes.find((it) => it.id === type);
+                return (
+                  <View
+                    key={`e-${i}`}
+                    className="flex-row justify-between items-center border-b border-white/5 pb-3"
+                  >
+                    <View className="flex-row items-center">
+                      <FontAwesome5
+                        name="tint"
+                        size={14}
+                        color="#b91c1c"
+                        solid
+                      />
+                      <Text className="text-red-500 font-black ml-2.5 text-base">
+                        Eternal Injury
+                      </Text>
+                      <FontAwesome5
+                        name="star"
+                        size={11}
+                        color="#fbbf24"
+                        solid
+                        style={{ marginLeft: 6 }}
+                      />
+                    </View>
+                    <View className="items-end">
+                      <Text className="text-red-300 font-mono text-sm font-bold">
+                        Lifespan −
+                        {Math.round((e?.lifespanReduction ?? 0) * 100)}%
+                      </Text>
+                      <Text className="text-gray-400 font-mono text-xs mt-1">
+                        Qi ×{(e?.qiMultiplier ?? 1).toFixed(2)}
+                      </Text>
+                    </View>
                   </View>
-                  <Text className="text-red-500 font-mono text-xs font-bold">
-                    ×{" "}
-                    {(
-                      injuryTypes.find((i) => i.id === type)?.qiMultiplier ?? 1
-                    ).toFixed(2)}
-                  </Text>
-                </View>
-              ))}
+                );
+              })}
             </View>
+
+            {/* Totals — lifespan is the sum of the per-injury values above;
+                qi reduction is their combined (multiplicative) effect. */}
+            <View className="border-t border-white/10 pt-4 mb-5 gap-y-2">
+              <View className="flex-row justify-between items-center">
+                <Text className="text-gray-200 text-base font-black uppercase tracking-wider">
+                  Total Lifespan Lost
+                </Text>
+                <Text className="text-red-400 font-mono text-xl font-black">
+                  {lifespanReductionPct}%
+                </Text>
+              </View>
+              <View className="flex-row justify-between items-center">
+                <Text className="text-gray-200 text-base font-black uppercase tracking-wider">
+                  Total Qi Reduction
+                </Text>
+                <Text className="text-red-400 font-mono text-xl font-black">
+                  {qiReductionPct}%
+                </Text>
+              </View>
+            </View>
+
+            {/* Footnote: explain the eternal-injury star marker */}
+            {eternalInjuries.length > 0 && (
+              <View className="flex-row items-start mb-6">
+                <FontAwesome5
+                  name="star"
+                  size={12}
+                  color="#fbbf24"
+                  solid
+                  style={{ marginTop: 3 }}
+                />
+                <Text className="text-amber-400 text-sm ml-2 flex-1 leading-5">
+                  Eternal injuries persist across lives — carried into every
+                  reincarnation.
+                </Text>
+              </View>
+            )}
 
             <Pressable
               onPress={() => setIsInjuriesVisible(false)}
@@ -464,7 +539,7 @@ export default function HomeScreen() {
         <View className="flex-1 justify-center items-center bg-black/80 px-6">
           <View className="w-full bg-[#131316] border border-white/10 rounded-3xl p-5 shadow-2xl">
             <Text className="text-white text-lg font-bold mb-5 text-center tracking-widest uppercase">
-              🏆 Karma Records
+              🏆 Achievements
             </Text>
 
             <View className="gap-y-3 mb-6">
@@ -535,7 +610,7 @@ export default function HomeScreen() {
 
                     <View
                       className="items-end justify-center"
-                      style={{ minWidth: 74 }}
+                      style={{ minWidth: 90 }}
                     >
                       <View className="flex-row items-center mb-1.5">
                         <FontAwesome5
@@ -566,9 +641,9 @@ export default function HomeScreen() {
                       {done && !claimed && (
                         <Pressable
                           onPress={() => claimAchievement(id)}
-                          className="bg-amber-400 px-3 py-1 rounded-md"
+                          className="bg-amber-400 px-5 py-2 rounded-lg"
                         >
-                          <Text className="text-black text-[9px] font-black uppercase tracking-wider">
+                          <Text className="text-black text-xs font-black uppercase tracking-wider">
                             Claim
                           </Text>
                         </Pressable>

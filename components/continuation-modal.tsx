@@ -1,4 +1,5 @@
-import { View, Text, Pressable, Modal } from "react-native";
+import { View, Text, Pressable, Modal, StyleSheet } from "react-native";
+import { BlurView } from "expo-blur";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { ReactNode } from "react";
 
@@ -26,7 +27,16 @@ const ContinuationModal = ({
       visible={visible}
       onRequestClose={onDismiss}
     >
-      <View className="flex-1 bg-black/95 justify-center items-center px-6">
+      <View className="flex-1 justify-center items-center px-6">
+        {/* Slightly blurred, lightly dimmed backdrop (was a near-opaque black). */}
+        <BlurView
+          intensity={35}
+          tint="dark"
+          experimentalBlurMethod="dimezisBlurView"
+          style={StyleSheet.absoluteFill}
+        />
+        <View className="absolute inset-0 bg-black/20" />
+
         <View className="bg-slate-900 w-full rounded-[50px] border border-yellow-500/30 p-8 pt-16 items-center">
           {showIcon && (
             <View className="absolute -top-8 w-16 h-16 rounded-full bg-yellow-500/20 border-2 border-yellow-400 items-center justify-center">

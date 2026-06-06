@@ -2,7 +2,6 @@ import {
   View,
   Text,
   Pressable,
-  Image,
   ImageBackground,
   useWindowDimensions,
 } from "react-native";
@@ -10,6 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Cloud } from "../components/cloud";
 import { LightningBolt } from "../components/lightning-bolt";
+import { QiAura } from "../components/qi-aura";
 import ContinuationModal from "../components/continuation-modal";
 import { useTribulation } from "../hooks/useTribulation";
 import { realms } from "../data/cultivation-data";
@@ -34,6 +34,11 @@ const lerp = (a: number, b: number, t: number) =>
 export default function Tribulation() {
   const { width: screenWidth } = useWindowDimensions();
   const MAX_IMAGE_WIDTH = screenWidth - 32;
+  // Player sprite is centered in a 3:4 contain box. This is the HP HUD's
+  // distance from the box top — set just below the character/cushion. Raise the
+  // multiplier to push it further down, lower it to lift it back up.
+  const PLAYER_BOX_HEIGHT = MAX_IMAGE_WIDTH * (4 / 3);
+  const HP_HUD_TOP = PLAYER_BOX_HEIGHT * 0.26;
 
   const {
     currentHp,
@@ -80,21 +85,17 @@ export default function Tribulation() {
 
       <SafeAreaView className="flex-1 px-4">
         {/* TOP STATUS HUD: Tribulation Cloud Status */}
-        <View className="mt-4 items-center">
-          <View className="bg-black/60 border border-white/10 rounded-2xl px-5 py-3 flex-row items-center gap-x-3 shadow-2xl">
-            <FontAwesome5 name="bolt" size={14} color={cloudColor} />
-            <View>
-              <Text className="text-gray-400 uppercase tracking-[2px] text-[9px] font-black">
-                Heavenly Core HP
-              </Text>
-              <Text className="text-white font-mono text-base font-bold mt-0.5">
-                {Math.ceil(cloudHp)}{" "}
-                <Text className="text-gray-600 text-xs font-sans font-normal">
-                  / {Math.ceil(cloudMaxHp)}
-                </Text>
-              </Text>
-            </View>
-          </View>
+        <View
+          className="mt-4 flex-row items-center justify-center gap-x-2"
+          style={{ transform: [{ translateY: -10 }] }}
+        >
+          <FontAwesome5 name="heart" size={18} color={cloudColor} solid />
+          <Text className="text-white font-mono text-xl font-black">
+            {Math.ceil(cloudHp)}{" "}
+            <Text className="text-gray-400 text-sm font-sans font-normal">
+              / {Math.ceil(cloudMaxHp)}
+            </Text>
+          </Text>
         </View>
 
         {/* Interactive Sky Cloud Bank Layer */}
@@ -145,6 +146,27 @@ export default function Tribulation() {
 
           {/* COMBINED PLAYER + HP TARGET ZONE */}
           <View className="absolute bottom-4 left-0 right-0 items-center overflow-visible z-30">
+            {/* VITALITY HUD: sibling of the player (not inside the scaled
+                Pressable), anchored just above the character's head. */}
+            <View
+              pointerEvents="none"
+              style={{
+                position: "absolute",
+                top: HP_HUD_TOP,
+                left: 0,
+                right: 0,
+              }}
+              className="flex-row items-center justify-center gap-x-2 z-50"
+            >
+              <FontAwesome5 name="heart" size={18} color="#ef4444" solid />
+              <Text className="text-white text-xl font-black font-mono">
+                {Math.ceil(currentHp)}{" "}
+                <Text className="text-gray-400 text-sm font-normal font-sans">
+                  / {Math.ceil(maxHp)}
+                </Text>
+              </Text>
+            </View>
+
             {/* Interactive Player Avatar Component Stack - Main Layout Base */}
             <Pressable
               onPress={tapRelease}
@@ -156,101 +178,14 @@ export default function Tribulation() {
               }}
               className="items-center justify-end overflow-visible relative"
             >
-              {/* VITALITY HUD: Deeply absolute positioned down inside the canvas frame to clear blank space asset gaps */}
-              {/* <View
-                style={{ position: "absolute", top: 24 }}
-                className="bg-black/95 border border-red-500/50 rounded-xl px-4 py-2 flex-row items-center shadow-2xl z-50 pointer-events-none"
-              >
-                <View className="mr-2 bg-red-500/10 p-1.5 rounded-lg border border-red-500/20">
-                  <FontAwesome5 name="heartbeat" size={12} color="#ef4444" />
-                </View>
-                <View>
-                  <Text className="text-red-400 uppercase tracking-[1.5px] text-[9px] font-black">
-                    Immortal Vessel HP
-                  </Text>
-                  <Text className="text-white text-base font-black font-mono mt-0.5">
-                    {Math.ceil(currentHp)}{" "}
-                    <Text className="text-gray-500 text-xs font-normal font-sans">
-                      / {Math.ceil(maxHp)}
-                    </Text>
-                  </Text>
-                </View>
-              </View> */}
-
-              {/* Extended Outer Atmospheric Halo */}
-              <Image
+              {/* Layered glow + character. Gold defaults; white flare while a bolt strikes. */}
+              <QiAura
                 source={playerImage}
-                resizeMode="contain"
-                style={{
-                  position: "absolute",
-                  width: "100%",
-                  height: "100%",
-                  tintColor: flashing ? "#fde047" : "#eab308",
-                  opacity: auraIntensity * 0.25,
-                  transform: [{ scale: 1.35 }],
-                }}
-              />
-              {/* Mid-tier Radiant Light Ring */}
-              <Image
-                source={playerImage}
-                resizeMode="contain"
-                style={{
-                  position: "absolute",
-                  width: "100%",
-                  height: "100%",
-                  tintColor: flashing ? "#fde047" : "#fbbf24",
-                  opacity: auraIntensity * 0.45,
-                  transform: [{ scale: 1.2 }],
-                }}
-              />
-              {/* Inner Core Flare Ring */}
-              <Image
-                source={playerImage}
-                resizeMode="contain"
-                style={{
-                  position: "absolute",
-                  width: "100%",
-                  height: "100%",
-                  tintColor: flashing ? "#ffffff" : "#fde047",
-                  opacity: flashing ? 0.95 : auraIntensity * 0.7,
-                  transform: [{ scale: 1.08 }],
-                }}
-              />
-              {/* Base Character Canvas Render */}
-              <Image
-                source={playerImage}
-                resizeMode="contain"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  shadowColor: "#facc15",
-                  shadowOpacity: auraIntensity * 0.8,
-                  shadowRadius: 24,
-                  shadowOffset: { width: 0, height: 0 },
-                }}
+                intensity={auraIntensity}
+                flashing={flashing}
+                style={{ width: "100%", height: "100%" }}
               />
             </Pressable>
-          </View>
-        </View>
-
-        {/* METRICS HUD: Bottom Aura Charge Monitor */}
-        <View className="mb-6 mt-6 bg-black/50 border border-white/5 rounded-2xl p-4 shadow-xl">
-          <View className="flex-row justify-between items-center mb-2">
-            <View className="flex-row items-center gap-x-2">
-              <FontAwesome5 name="fire" size={11} color="#facc15" />
-              <Text className="text-yellow-200 text-xs font-black uppercase tracking-widest">
-                Aura Deflection
-              </Text>
-            </View>
-            <Text className="text-white font-mono text-xs font-bold bg-white/5 px-2 py-0.5 rounded-md border border-white/5">
-              {Math.ceil(charge)}%
-            </Text>
-          </View>
-          <View className="w-full h-2.5 bg-white/10 rounded-full overflow-hidden p-[1px]">
-            <View
-              className="h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full"
-              style={{ width: `${auraIntensity * 100}%` }}
-            />
           </View>
         </View>
       </SafeAreaView>
