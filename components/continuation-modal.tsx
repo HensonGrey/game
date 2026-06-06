@@ -44,20 +44,14 @@ const ContinuationModal = ({
             </View>
           )}
 
-          <Text className="text-yellow-300 text-lg font-black uppercase mb-4 tracking-[5px]">
-            {title}
-          </Text>
-          <Text className="text-slate-400 text-center text-sm leading-6 italic mb-8 px-2">
-            {body}
-          </Text>
+          <Text className="modal-title text-yellow-300 mb-4">{title}</Text>
+          <Text className="body-text text-center italic mb-8 px-2">{body}</Text>
 
           <Pressable
             onPress={onDismiss}
             className="w-full bg-yellow-500 rounded-full py-4 items-center"
           >
-            <Text className="text-slate-900 font-black text-sm uppercase tracking-widest">
-              {buttonLabel}
-            </Text>
+            <Text className="btn-label text-slate-900">{buttonLabel}</Text>
           </Pressable>
         </View>
       </View>

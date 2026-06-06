@@ -196,10 +196,13 @@ export default function Tribulation() {
         title="Tribulation Survived"
         body={
           <>
+            Congratulations on surviving this heavenly tribulation and becoming
+            a{" "}
             <Text className="text-purple-400 font-black not-italic uppercase tracking-widest">
               {newRealm?.name ?? ""}
-            </Text>
-            {newRealm?.description ? ` — ${newRealm.description}` : ""}
+            </Text>{" "}
+            great cultivator. May your Dao stand eternal and your lifespan
+            outlast the turning of the ages.
           </>
         }
         buttonLabel="Ascend"

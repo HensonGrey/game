@@ -23,6 +23,7 @@ import { achievements } from "../data/achievement-data";
 import { items } from "../data/item-data";
 import ContinuationModal from "../components/continuation-modal";
 import ItemModal from "../components/item-modal";
+import TitleModal from "../components/title-modal";
 import StatButton from "../components/stat-button";
 import { QiAura } from "../components/qi-aura";
 import { ComponentProps } from "react";
@@ -34,6 +35,7 @@ export default function HomeScreen() {
   const [isStatsVisible, setIsStatsVisible] = useState(false);
   const [isInjuriesVisible, setIsInjuriesVisible] = useState(false);
   const [isAchievementsVisible, setIsAchievementsVisible] = useState(false);
+  const [isTitleVisible, setIsTitleVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<ItemEnum | null>(null);
   const [isTribulationConfirmVisible, setIsTribulationConfirmVisible] =
     useState(false);
@@ -62,6 +64,7 @@ export default function HomeScreen() {
     SPIRITUAL_ROOT_MULTIPLIER,
     CULTIVATION_MULTIPLIER,
     INJURY_MULTIPLIER,
+    TITLE_MULTIPLIER,
     injuries,
     eternalInjuries,
   } = useCultivation();
@@ -174,11 +177,15 @@ export default function HomeScreen() {
         {/* Realm Information Header Panel */}
         <View className="items-center mt-6 mb-4 bg-black/40 border border-white/10 rounded-2xl p-4 shadow-2xl">
           {highestTitle && (
-            <View className="mb-2 px-3 py-1 border border-cyan-500/40 rounded-md bg-cyan-950/50">
+            <Pressable
+              onPress={() => setIsTitleVisible(true)}
+              className="mb-2 px-3 py-1 border border-cyan-500/40 rounded-md bg-cyan-950/50 flex-row items-center gap-x-1.5 active:bg-cyan-900/60"
+            >
               <Text className="text-cyan-400 text-[10px] tracking-[4px] font-black uppercase text-center">
                 {highestTitle}
               </Text>
-            </View>
+              <FontAwesome5 name="info-circle" size={9} color="#22d3ee" />
+            </Pressable>
           )}
           <Text
             className="text-white text-3xl font-extrabold tracking-wide text-center"
@@ -320,6 +327,17 @@ export default function HomeScreen() {
                   × {SPIRITUAL_ROOT_MULTIPLIER}
                 </Text>
               </View>
+
+              {TITLE_MULTIPLIER > 1 && (
+                <View className="flex-row justify-between items-center border-b border-white/5 pb-2.5">
+                  <Text className="text-cyan-300 text-sm">
+                    Reincarnation Title
+                  </Text>
+                  <Text className="text-cyan-400 font-mono font-bold">
+                    × {TITLE_MULTIPLIER}
+                  </Text>
+                </View>
+              )}
 
               {INJURY_MULTIPLIER < 1 && (
                 <View className="flex-row justify-between items-center border-b border-white/5 pb-2.5">
@@ -635,6 +653,11 @@ export default function HomeScreen() {
       </Modal>
 
       <ItemModal item={selectedItem} onClose={() => setSelectedItem(null)} />
+
+      <TitleModal
+        title={isTitleVisible ? (highestTitle ?? null) : null}
+        onClose={() => setIsTitleVisible(false)}
+      />
 
       <ContinuationModal
         visible={isTribulationConfirmVisible}

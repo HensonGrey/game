@@ -1,6 +1,8 @@
 import { usePlayerStore } from "../store/player-store";
 import { getRequiredQi } from "../helpers/cultivation-helper";
+import { getHighestWeightTitle } from "../helpers/title-helper";
 import { injuryTypes } from "../constants/injury-constants";
+import { titles } from "../data/title-data";
 import { useItem } from "./useItem";
 
 export function useCultivation() {
@@ -8,6 +10,7 @@ export function useCultivation() {
   const spiritualRootIndex = usePlayerStore((s) => s.spiritualRootIndex);
   const injuries = usePlayerStore((s) => s.currentLife.injuries);
   const eternalInjuries = usePlayerStore((s) => s.eternalInjuries);
+  const ownedTitles = usePlayerStore((s) => s.currentLife.titles);
   const { PENDANT_MULTIPLIER, pendantLevel } = useItem();
 
   const requiredQi = getRequiredQi(realmIndex, stageIndex);
@@ -22,12 +25,19 @@ export function useCultivation() {
     1,
   );
 
+  // Only the highest-weight title's boost applies (titles don't stack).
+  const bestTitle = getHighestWeightTitle(ownedTitles);
+  const TITLE_MULTIPLIER = bestTitle
+    ? (titles.find((t) => t.name === bestTitle)?.multiplier ?? 1)
+    : 1;
+
   const qiMultiplier =
     BASE_MULTIPLIER *
     SPIRITUAL_ROOT_MULTIPLIER *
     CULTIVATION_MULTIPLIER *
     INJURY_MULTIPLIER *
-    PENDANT_MULTIPLIER;
+    PENDANT_MULTIPLIER *
+    TITLE_MULTIPLIER;
 
   return {
     qi,
@@ -42,6 +52,7 @@ export function useCultivation() {
     CULTIVATION_MULTIPLIER,
     INJURY_MULTIPLIER,
     PENDANT_MULTIPLIER,
+    TITLE_MULTIPLIER,
     pendantLevel,
 
     injuries,
