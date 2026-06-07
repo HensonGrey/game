@@ -3,6 +3,16 @@
 Cultivation-progression game on Expo + React Native. Map of where things live.
 
 Stack: Expo Router, React Native, NativeWind, Zustand, TypeScript.
+
+## How to run
+
+```bash
+npm install
+npm start        # Expo dev server
+npm run android  # Android
+npm run ios      # iOS
+```
+
 Run with `npm start`. Test with `npm test`. Lint with `npm run lint`.
 
 ## Screens — [app/](app/)
