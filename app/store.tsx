@@ -41,9 +41,9 @@ export default function SystemStore() {
   const getUpgradeCost = (type: UPGRADE_TYPES): number => {
     switch (type) {
       case UPGRADE_TYPES.SPIRITUAL_ROOT:
-        return Math.floor(20 * Math.pow(1.5, spiritualRootIndex));
+        return Math.floor(25 * Math.pow(1.8, spiritualRootIndex));
       case UPGRADE_TYPES.VITALITY:
-        return Math.floor(10 * Math.pow(1.5, vitalityLevel));
+        return Math.floor(15 * Math.pow(1.6, vitalityLevel));
       case UPGRADE_TYPES.CLEANSE_ETERNAL_INJURIES:
         return Math.floor(40 * Math.pow(1.6, eternalInjuries.length - 1));
       default:

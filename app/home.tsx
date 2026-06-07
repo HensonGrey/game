@@ -25,6 +25,7 @@ import ContinuationModal from "../components/continuation-modal";
 import ItemModal from "../components/item-modal";
 import TitleModal from "../components/title-modal";
 import StatButton from "../components/stat-button";
+import AnimatedNumber from "../components/animated-number";
 import { QiAura } from "../components/qi-aura";
 import { ComponentProps } from "react";
 import homeBackground from "../assets/home-background.png";
@@ -47,6 +48,7 @@ export default function HomeScreen() {
   const currentAge = usePlayerStore((state) => state.currentLife.currentAge);
   const maxAge = usePlayerStore((state) => state.currentLife.maxAge);
   const totalTaps = usePlayerStore((state) => state.totalTaps);
+  const originPoints = usePlayerStore((state) => state.originPoints);
   const claimedAchievements = usePlayerStore(
     (state) => state.claimedAchievements,
   );
@@ -147,23 +149,34 @@ export default function HomeScreen() {
 
       <SafeAreaView className="flex-1 px-6">
         {/* Header: Vitality & Prowess */}
-        <View className="flex-row justify-between items-center mt-4">
-          {/* POPPING LIFE SPAN PANEL */}
-          <View className="bg-black/75 border-2 border-amber-500/40 rounded-2xl px-4 py-2.5 flex-row items-center shadow-xl">
-            <View className="mr-3 bg-amber-500/10 p-2 rounded-xl border border-amber-500/20">
-              <FontAwesome5 name="hourglass-half" size={16} color="#fbbf24" />
+        <View className="flex-row justify-between items-center mt-0">
+          <View className="gap-y-2">
+            {/* Store Points — animates up as breakthrough rewards land */}
+            <View className="bg-black/75 border-2 border-amber-500/40 rounded-xl px-4 py-2 flex-row items-center justify-center gap-x-2 shadow-xl">
+              <FontAwesome5 name="gem" size={12} color="#fbbf24" />
+              <AnimatedNumber
+                value={originPoints}
+                className="text-white text-base font-bold font-mono tracking-tight"
+              />
             </View>
-            <View>
-              <Text className="text-amber-400 uppercase tracking-[2px] text-[10px] font-black">
-                Life Span
-              </Text>
-              <Text className="text-white text-2xl font-black mt-0.5 font-mono tracking-tight">
-                {currentAge}
-                <Text className="text-gray-400 text-sm font-bold font-sans">
-                  {" "}
-                  / {Math.ceil(maxAge)} yrs
+
+            {/* POPPING LIFE SPAN PANEL */}
+            <View className="bg-black/75 border-2 border-amber-500/40 rounded-2xl px-4 py-2.5 flex-row items-center shadow-xl">
+              <View className="mr-3 bg-amber-500/10 p-2 rounded-xl border border-amber-500/20">
+                <FontAwesome5 name="hourglass-half" size={16} color="#fbbf24" />
+              </View>
+              <View>
+                <Text className="text-amber-400 uppercase tracking-[2px] text-[10px] font-black">
+                  Life Span
                 </Text>
-              </Text>
+                <Text className="text-white text-2xl font-black mt-0.5 font-mono tracking-tight">
+                  {currentAge}
+                  <Text className="text-gray-400 text-sm font-bold font-sans">
+                    {" "}
+                    / {Math.ceil(maxAge)} yrs
+                  </Text>
+                </Text>
+              </View>
             </View>
           </View>
 

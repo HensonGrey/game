@@ -3,12 +3,14 @@ import { useEffect, useState } from "react";
 import { Redirect } from "expo-router";
 import { Route } from "../enums/route.enum";
 import { usePlayerStore } from "../store/player-store";
+import { IS_DEV } from "../constants/env";
 
 export default function Loading() {
   // The persisted save rehydrates from AsyncStorage asynchronously. Seed from
   // hasHydrated() in case it already finished (fast storage or a remount).
-  const [hydrated, setHydrated] = useState(() =>
-    usePlayerStore.persist.hasHydrated(),
+  // In dev, hydration is skipped entirely, so the store is ready immediately.
+  const [hydrated, setHydrated] = useState(
+    () => IS_DEV || usePlayerStore.persist.hasHydrated(),
   );
 
   useEffect(() => {

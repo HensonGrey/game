@@ -1,2 +1,2 @@
-export const MIN_LIFESPAN = 50;
+export const MIN_LIFESPAN = 60;
 export const MAX_LIFESPAN = 80;
