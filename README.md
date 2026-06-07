@@ -3,7 +3,7 @@
 Cultivation-progression game on Expo + React Native. Map of where things live.
 
 Stack: Expo Router, React Native, NativeWind, Zustand, TypeScript.
-Run with `npm run start`. Typecheck with `npx tsc --noEmit`.
+Run with `npm start`. Test with `npm test`. Lint with `npm run lint`.
 
 ## Screens — [app/](app/)
 
@@ -51,13 +51,13 @@ Pure functions, no store reads.
 
 ## Data — [data/](data/)
 
-Record<Enum, Definition> tables. Enums in [enums/](enums/) supply the keys.
+Typed arrays (`T[]`). Looked up by index or `.find()` at call sites.
 
-- [cultivation-data](data/cultivation-data.ts) — realms array
-- [spiritual-root-data](data/spiritual-root-data.ts) — root tiers array
-- [title-data](data/title-data.ts) — title definitions
-- [achievement-data](data/achievement-data.ts) — achievement definitions; threshold constants at top of file
-- [item-data](data/item-data.ts) — item definitions
+- [cultivation-data](data/cultivation-data.ts) — `realms: Realm[]`
+- [spiritual-root-data](data/spiritual-root-data.ts) — `roots: SpiritualRoot[]`
+- [title-data](data/title-data.ts) — `titles: Title[]`
+- [achievement-data](data/achievement-data.ts) — `achievements: Achievement[]`; threshold constants at top of file
+- [item-data](data/item-data.ts) — `items: Item[]`
 
 ## Interfaces — [interfaces/](interfaces/)
 
@@ -81,10 +81,28 @@ Death + reincarnation. Age watcher in [home](app/home.tsx) routes to /dead when 
 
 Achievements + items. Definitions in [achievement-data](data/achievement-data.ts); each entry's getProgress reads { totalTaps, currentRealmIndex }. To depend on new state, widen AchievementProgressSource in [achievement.interface.ts](interfaces/achievement.interface.ts) and thread it through claimAchievement. Claim grants OP and sets itemLevels[itemReward] = 1. Tapping an unlocked tile opens [item-modal](components/item-modal.tsx), where upgradeItem spends OP and bumps the level. Pendant boosts qi +10% / lvl; sword reduces tribulation damage 5% / lvl. Cap = 10.
 
+## Tests — [**tests**/](__tests__/)
+
+Jest 29 + jest-expo preset. Run with `npm test`. 108 tests across 10 suites.
+
+- `helpers/` — pure function coverage (cultivation-helper, item-helper, title-helper)
+- `store/player-store.test.ts` — all store actions (addQi, breakthrough, inflictInjury, recordDeath, reincarnate, purchaseUpgrade, claimAchievement, upgradeItem)
+- `hooks/useCultivation.test.ts`, `hooks/useItem.test.ts` — hook output and multiplier composition against a real (non-persisted) store
+- `app/` — screen-level render + interaction tests (index, dead, store); home covered by `home.test.tsx`
+
+Mocks live in `__mocks__/`: AsyncStorage (`@react-native-async-storage/async-storage`) and image files (`fileMock.ts`). Store mocks in app tests create a real Zustand store inside `jest.mock()` factories and attach a `.persist` stub manually.
+
+## Tooling
+
+Pre-commit: `lint-staged` runs ESLint (--fix) + Prettier on staged `*.{ts,tsx}` files via Husky.
+Pre-push: `npm test` — push is aborted if any test fails.
+
+ESLint config: [eslint.config.js](eslint.config.js) (flat config, ESLint v10). Plugins: `@typescript-eslint`, `react-hooks`, `eslint-config-prettier`.
+Prettier config: [.prettierrc](.prettierrc).
+
 ## Conventions
 
-- Record<Enum, Definition> for static tables (TS exhaustiveness, O(1) lookup).
+- Typed arrays (`T[]`) for static data tables. Looked up by index or `.find()` at call sites.
 - Pure helpers vs stateful hooks. Anything reading the store goes in [hooks/](hooks/).
 - Cross-life data on Player; per-life data on Life. reincarnate replaces currentLife only.
 - Components prefer hook consumption over direct store reads where a hook already exposes the value.
-- // todo: comments mark placeholder code.
