@@ -45,6 +45,8 @@ export function useTribulation() {
       cloudMaxHp: getStrength(realmIndex, stageIndex),
       cloudTapDamage:
         T.BASE_CLOUD_TAP_DAMAGE * Math.pow(T.CLOUD_TAP_DAMAGE_FACTOR, r),
+      fireballDamage:
+        getStrength(realmIndex, stageIndex) * T.FIREBALL_STR_SCALING,
     };
   }, [targetRealmIndex, SWORD_MULTIPLIER]);
 
@@ -55,11 +57,18 @@ export function useTribulation() {
   const [lightningX, setLightningX] = useState(0.5);
   const [boltProgress, setBoltProgress] = useState(0);
 
+  // Fireball: launched every Nth cloud tap, ascends from the player to the cloud.
+  const [fireballActive, setFireballActive] = useState(false);
+  const [fireballProgress, setFireballProgress] = useState(0);
+
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
   const chargeRef = useRef(charge);
   chargeRef.current = charge;
   const injuredRef = useRef({ normal: false, eternal: false });
+  const cloudHitsRef = useRef(0);
+  // Live fireball timers, cleared on unmount so a tap-launched flight can't fire after teardown.
+  const fireballTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   // Apply pending HP reductions from injuries earned in prior tribulations.
   // Deferred to mount so the player's HP bar doesn't shrink mid-fight.
@@ -187,6 +196,15 @@ export function useTribulation() {
     return () => clearTimeout(t);
   }, [phase]);
 
+  // Clear any in-flight fireball timers on unmount.
+  useEffect(
+    () => () => {
+      fireballTimersRef.current.forEach(clearTimeout);
+      fireballTimersRef.current = [];
+    },
+    [],
+  );
+
   const tapRelease = () => {
     if (
       phase === TribulationPhase.SUCCEEDED ||
@@ -196,19 +214,52 @@ export function useTribulation() {
     setCharge((c) => Math.max(0, c - tuning.tapRelief));
   };
 
+  // Apply damage to the cloud and trip the cooldown when it dies. Shared by taps and fireballs.
+  const damageCloud = (amount: number) => {
+    setCloudHp((hp) => {
+      const next = Math.max(0, hp - amount);
+      if (next === 0 && phaseRef.current === TribulationPhase.ACTIVE) {
+        setPhase(TribulationPhase.COOLDOWN);
+      }
+      return next;
+    });
+  };
+
+  // Launch a fireball: animate its ascent, then deal the strength-scaled burst on impact.
+  const launchFireball = () => {
+    setFireballActive(true);
+    setFireballProgress(0);
+
+    const start = Date.now();
+    const ascentTimer = setInterval(() => {
+      const elapsed = Date.now() - start;
+      const p = Math.min(1, elapsed / T.FIREBALL_TRAVEL_MS);
+      setFireballProgress(p);
+      if (p >= 1) clearInterval(ascentTimer);
+    }, T.FIREBALL_TICK_MS);
+
+    const impactTimer = setTimeout(() => {
+      clearInterval(ascentTimer);
+      setFireballActive(false);
+      setFireballProgress(0);
+      damageCloud(tuning.fireballDamage);
+    }, T.FIREBALL_TRAVEL_MS);
+
+    fireballTimersRef.current.push(ascentTimer, impactTimer);
+  };
+
   const tapCloud = () => {
     if (
       phase === TribulationPhase.SUCCEEDED ||
       phase === TribulationPhase.FAILED
     )
       return;
-    setCloudHp((hp) => {
-      const next = Math.max(0, hp - tuning.cloudTapDamage);
-      if (next === 0 && phaseRef.current === TribulationPhase.ACTIVE) {
-        setPhase(TribulationPhase.COOLDOWN);
-      }
-      return next;
-    });
+    damageCloud(tuning.cloudTapDamage);
+
+    cloudHitsRef.current += 1;
+    if (cloudHitsRef.current % T.FIREBALL_HIT_INTERVAL === 0) {
+      launchFireball();
+    }
   };
 
   const dismissCongrats = () => {
@@ -231,6 +282,8 @@ export function useTribulation() {
     flashing,
     lightningX,
     boltProgress,
+    fireballActive,
+    fireballProgress,
     auraIntensity,
     tapRelease,
     tapCloud,

@@ -9,6 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Cloud } from "../components/cloud";
 import { LightningBolt } from "../components/lightning-bolt";
+import { Fireball } from "../components/fireball";
 import { QiAura } from "../components/qi-aura";
 import ContinuationModal from "../components/continuation-modal";
 import { useTribulation } from "../hooks/useTribulation";
@@ -47,6 +48,8 @@ export default function Tribulation() {
     flashing,
     lightningX,
     boltProgress,
+    fireballActive,
+    fireballProgress,
     auraIntensity,
     tapRelease,
     tapCloud,
@@ -141,6 +144,22 @@ export default function Tribulation() {
               }}
             >
               <LightningBolt progress={boltProgress} />
+            </View>
+          )}
+
+          {/* Strength-scaled Fireball — rises from the player up to the cloud */}
+          {fireballActive && (
+            <View
+              pointerEvents="none"
+              style={{
+                position: "absolute",
+                left: "50%",
+                marginLeft: -22,
+                bottom: `${30 + fireballProgress * 70}%`,
+                zIndex: 45,
+              }}
+            >
+              <Fireball />
             </View>
           )}
 

@@ -32,6 +32,12 @@ export const CLOUD_TAP_DAMAGE_FACTOR = 1.15; // Per-realm multiplier on cloud ta
 // HP fraction thresholds at which the cloud loses circles. Each threshold removes 2 circles from the 9-circle cloud bank.
 export const CLOUD_SHRINK_THRESHOLDS = [0.8, 0.5, 0.2] as const;
 
+// ─── Fireball ─────────────────────────────────────────────────────────────────
+export const FIREBALL_HIT_INTERVAL = 5; // Every Nth cloud tap launches a fireball at the cloud.
+export const FIREBALL_STR_SCALING = 0.25; // Fireball damage = player strength * this. Big burst relative to per-tap damage.
+export const FIREBALL_TRAVEL_MS = 456; // Time for the fireball to travel from the player to the cloud (ms). Damage lands on impact.
+export const FIREBALL_TICK_MS = 16; // Tick interval for the fireball's ascent animation (ms). ~16ms ≈ 60fps.
+
 // Cloud color interpolation endpoints. High HP = aggressive deep indigo; low HP = pale wispy slate.
 export const CLOUD_COLOR_FULL = { r: 76, g: 29, b: 149 };
 export const CLOUD_COLOR_EMPTY = { r: 148, g: 163, b: 184 };
