@@ -114,7 +114,7 @@ export default function HomeScreen() {
           currentAge: state.currentLife.currentAge + 1,
         },
       }));
-    }, 1000);
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 

@@ -1,17 +1,29 @@
 import { View, ActivityIndicator, Text } from "react-native";
-import { useEffect } from "react";
-import { router } from "expo-router";
+import { useEffect, useState } from "react";
+import { Redirect } from "expo-router";
 import { Route } from "../enums/route.enum";
+import { usePlayerStore } from "../store/player-store";
 
 export default function Loading() {
-  useEffect(() => {
-    const fetchData = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // replace with real fetch
-      router.replace(Route.HOME);
-    };
+  // The persisted save rehydrates from AsyncStorage asynchronously. Seed from
+  // hasHydrated() in case it already finished (fast storage or a remount).
+  const [hydrated, setHydrated] = useState(() =>
+    usePlayerStore.persist.hasHydrated(),
+  );
 
-    fetchData();
-  }, []);
+  useEffect(() => {
+    if (hydrated) return;
+    const unsub = usePlayerStore.persist.onFinishHydration(() =>
+      setHydrated(true),
+    );
+    return unsub;
+  }, [hydrated]);
+
+  // Redirect declaratively rather than calling router.replace in an effect, so
+  // navigation waits for the root navigator to mount instead of racing it.
+  if (hydrated) {
+    return <Redirect href={Route.HOME} />;
+  }
 
   return (
     <View className="flex-1 items-center justify-center gap-4">

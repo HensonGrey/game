@@ -1,6 +1,9 @@
 import { Slot } from "expo-router";
 import "../global.css";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { setupGlobalErrorHandler } from "../helpers/global-error-handler";
+
+setupGlobalErrorHandler();
 
 export default function Layout() {
   return (

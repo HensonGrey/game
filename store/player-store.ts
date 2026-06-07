@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Life, Player } from "../interfaces/player.interface";
 import {
   getNextState,
@@ -45,7 +47,9 @@ const INITIAL_LIFE: Life = {
   injuries: [],
 };
 
-export const usePlayerStore = create<PlayerStore>((set, get) => ({
+export const usePlayerStore = create<PlayerStore>()(
+  persist(
+    (set, get) => ({
   spiritualRootIndex: 4,
   vitalityLevel: 0,
   originPoints: 100,
@@ -275,4 +279,21 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       };
     });
   },
-}));
+    }),
+    {
+      name: "player-store",
+      storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => ({
+        spiritualRootIndex: state.spiritualRootIndex,
+        vitalityLevel: state.vitalityLevel,
+        originPoints: state.originPoints,
+        lives: state.lives,
+        eternalInjuries: state.eternalInjuries,
+        totalTaps: state.totalTaps,
+        claimedAchievements: state.claimedAchievements,
+        itemLevels: state.itemLevels,
+        currentLife: state.currentLife,
+      }),
+    },
+  ),
+);
